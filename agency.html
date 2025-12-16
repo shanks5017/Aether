@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <title>The Agency | AETHER</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#050505',
+                        charcoal: '#0a0a0a',
+                        platinum: '#EAEAEA',
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                    },
+                    backgroundImage: {
+                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP (NO LENIS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #EAEAEA;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .bg-grid-vertical {
+            background-size: 20% 100%;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        }
+
+        /* Spotlight Effect */
+        .spotlight-overlay {
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                    rgba(255, 255, 255, 0.06),
+                    transparent 40%);
+            z-index: 2;
+        }
+
+        /* Footer 3D Styles */
+        .stroke-text {
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-3d-stage {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+    </style>
+</head>
+
+<body class="bg-obsidian text-platinum antialiased selection:bg-white/20">
+
+    <!-- Noise Overlay -->
+    <div class="fixed inset-0 z-50 pointer-events-none opacity-[0.07] mix-blend-overlay">
+        <div class="absolute inset-0 bg-noise w-full h-full animate-pulse"></div>
+    </div>
+
+    <!-- Mouse Spotlight -->
+    <div id="spotlight"
+        class="fixed inset-0 pointer-events-none spotlight-overlay transition-opacity duration-500 opacity-0"></div>
+
+    <!-- Vertical Grid -->
+    <div class="fixed inset-0 z-0 bg-grid-vertical pointer-events-none opacity-20"></div>
+
+    <!-- Aurora Background (Parallax Target) -->
+    <div class="aurora-container fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+            class="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] rounded-full mix-blend-screen filter blur-[100px] opacity-10 bg-violet-900/40 animate-pulse">
+        </div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] rounded-full mix-blend-screen filter blur-[100px] opacity-10 bg-cyan-900/40 animate-pulse"
+            style="animation-delay: 2s"></div>
+    </div>
+
+    <!-- 11/10 CREATIVITY: 3D Warp Grid (The Infinite Architecture) -->
+    <canvas id="warpGrid" class="fixed inset-0 z-[1] opacity-40 pointer-events-none mix-blend-screen"></canvas>
+
+    <!-- 11/10 POLISH: Connection Beam (Scroll Progress) -->
+    <div
+        class="fixed left-6 md:left-12 top-0 bottom-0 w-[1px] z-[50] pointer-events-none mix-blend-overlay hidden md:block">
+        <div class="h-full w-full bg-white/10"></div>
+        <div id="connectionBeam"
+            class="absolute top-0 left-0 w-full bg-gradient-to-b from-transparent via-cyan-500 to-violet-500 h-0 box-shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+        </div>
+    </div>
+
+    <!-- 11/10 POLISH: Parallax Debris Container -->
+    <div id="parallaxDebris" class="fixed inset-0 z-[1] pointer-events-none overflow-hidden">
+        <!-- JS will populate this with floating graphic elements -->
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar"
+        class="fixed top-0 left-0 w-full z-[1000] px-6 md:px-12 py-6 md:py-8 flex justify-between items-center opacity-100 pointer-events-auto transition-all duration-700 ease-in-out">
+        <!-- Logo -->
+        <div class="flex-1 relative z-[1002]">
+            <a href="index.html"
+                class="text-xl md:text-2xl font-bold tracking-[0.2em] text-white hover:opacity-80 transition-opacity cursor-pointer">AETHER</a>
+        </div>
+
+        <!-- Desktop Links -->
+        <div
+            class="hidden md:flex gap-12 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300 relative z-[1001]">
+            <a href="index.html" class="relative group py-2 block cursor-pointer">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">Home
+                    </div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Home</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left"></span>
+            </a>
+            <a href="expertise.html" class="relative group py-2 block cursor-pointer">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">
+                        Expertise</div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Expertise</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left"></span>
+            </a>
+            <a href="work.html" class="relative group py-2 block cursor-pointer">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">Work
+                    </div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Work</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left"></span>
+            </a>
+            <a href="agency.html" class="relative group py-2 block cursor-pointer text-white">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">
+                        Agency</div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Agency</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-100 transition-transform duration-300 ease-out"></span>
+            </a>
+        </div>
+
+        <!-- Mobile Toggle & Desktop CTA -->
+        <div class="flex-1 flex justify-end items-center relative z-[1002]">
+
+            <!-- Mobile "Glass Pill" Toggle -->
+            <div class="md:hidden transition-opacity duration-300" id="mobile-toggle-container">
+                <button id="mobile-toggle"
+                    class="group relative px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-3 overflow-hidden transition-all duration-300 active:scale-95">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Menu</span>
+                    <div class="flex flex-col gap-[4px] items-end">
+                        <span class="h-[1px] bg-white w-5 group-hover:w-3 transition-all duration-300"></span>
+                        <span class="h-[1px] bg-white w-3 group-hover:w-5 transition-all duration-300"></span>
+                    </div>
+                </button>
+            </div>
+
+            <a href="contact.html"
+                class="hidden md:inline-block magnetic-btn relative overflow-hidden px-6 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors group cursor-pointer">
+                <span class="relative z-10 text-[10px] font-bold uppercase tracking-widest block">Let's Talk</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar Overlay (Glassmorphic) -->
+    <div id="mobile-menu"
+        class="fixed inset-0 z-[1001] bg-obsidian/90 backdrop-blur-xl w-full h-screen transform translate-x-full md:hidden flex flex-col pt-32 px-8 transition-transform duration-700 ease-[cubic-bezier(0.87,0,0.13,1)]">
+        <div class="absolute top-0 left-0 w-full h-full bg-noise opacity-[0.05] pointer-events-none"></div>
+
+        <!-- Close Button -->
+        <button id="mobile-close"
+            class="absolute top-6 right-6 z-[1003] p-4 text-white hover:rotate-90 transition-transform duration-500 ease-out">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <div class="mobile-links flex flex-col items-start gap-8 relative z-10">
+            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Navigation</span>
+
+            <a href="index.html"
+                class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">01</span>Home
+            </a>
+            <a href="expertise.html"
+                class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">02</span>Expertise
+            </a>
+            <a href="work.html"
+                class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">03</span>Work
+            </a>
+            <a href="agency.html" class="text-5xl font-light uppercase tracking-tight text-white italic relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">04</span>Agency
+            </a>
+        </div>
+
+        <div class="mt-auto mb-12 w-full mobile-footer opacity-0 relative z-10">
+            <div class="w-full h-[1px] bg-white/10 mb-8"></div>
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Start a project</span>
+                <a href="contact.html"
+                    class="text-sm font-bold uppercase tracking-widest text-black bg-white px-6 py-3 rounded-full">Let's
+                    Talk</a>
+            </div>
+            <div class="mt-8 text-[10px] text-gray-700 font-mono tracking-widest uppercase text-center">© AETHER AGENCY
+                2025
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="relative z-10">
+
+        <!-- 1. CINEMATIC HERO: Elegant Entrance -->
+        <!-- NOTE: Transparent background for Warp Grid visibility -->
+        <section id="hero"
+            class="relative min-h-screen flex items-center justify-center overflow-hidden bg-transparent">
+
+            <!-- Semicircle Arrows (corners) -->
+            <div class="absolute inset-0 pointer-events-none z-10 select-none">
+                <!-- Top-left semicircle -->
+                <svg class="absolute top-6 left-6 w-[200px] h-[200px] overflow-visible">
+                    <path id="arrowTopLeft" class="arrow-path" d="M 0,200 Q 0,0 200,0" stroke="rgba(80, 80, 80, 0.8)"
+                        stroke-width="3" fill="none" stroke-dasharray="400" stroke-dashoffset="400" />
+                    <!-- Arrow head at end -->
+                    <circle id="arrowHead1" cx="200" cy="0" r="4" fill="rgba(80, 80, 80, 1)" opacity="0" />
+                </svg>
+
+                <!-- Bottom-right semicircle (rotated 180) -->
+                <svg class="absolute bottom-6 right-6 w-[200px] h-[200px] overflow-visible rotate-180">
+                    <path id="arrowBottomRight" class="arrow-path" d="M 0,200 Q 0,0 200,0"
+                        stroke="rgba(80, 80, 80, 0.8)" stroke-width="3" fill="none" stroke-dasharray="400"
+                        stroke-dashoffset="400" />
+                    <!-- Arrow head at end -->
+                    <circle id="arrowHead2" cx="200" cy="0" r="4" fill="rgba(80, 80, 80, 1)" opacity="0" />
+                </svg>
+            </div>
+
+            <!-- Text Content (animated entrance) -->
+            <div id="heroContent" class="relative z-20 px-6 md:px-12 max-w-7xl mx-auto text-center">
+
+                <!-- Split text for animation -->
+                <div class="overflow-hidden mb-8">
+                    <h1 class="hero-text opacity-0">
+                        <div class="hero-line overflow-hidden">
+                            <span
+                                class="text-[clamp(3rem,8vw,7rem)] font-black uppercase tracking-tighter leading-none text-platinum block">
+                                PRECISION.
+                            </span>
+                        </div>
+                        <div class="hero-line overflow-hidden">
+                            <span
+                                class="text-[clamp(3rem,8vw,7rem)] font-black uppercase tracking-tighter leading-none text-platinum block">
+                                POWER.
+                            </span>
+                        </div>
+                        <div class="hero-line overflow-hidden">
+                            <span
+                                class="text-[clamp(3rem,8vw,7rem)] font-black uppercase tracking-tighter leading-none text-platinum block">
+                                PERFORMANCE.
+                            </span>
+                        </div>
+                    </h1>
+                </div>
+
+                <p class="text-sm md:text-base font-mono text-gray-400 max-w-xl mx-auto opacity-0" id="heroSubtitle">
+                    Where data meets design intuition. We reject templates to engineer bespoke digital architectures.
+                </p>
+
+                <!-- Minimal scroll indicator -->
+                <div class="absolute bottom-16 left-1/2 -translate-x-1/2 opacity-0" id="scrollIndicator">
+                    <div class="w-[1px] h-12 bg-gradient-to-b from-platinum/30 to-transparent"></div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- 2. LIVING METRICS: System Status HUD -->
+        <!-- NOTE: Transparent background for Warp Grid visibility -->
+        <!-- NOTE: Transparent background for Warp Grid visibility -->
+        <section id="metrics" class="relative min-h-[50vh] py-32 bg-obsidian/40 border-t border-platinum/10">
+
+            <div class="max-w-7xl mx-auto px-6 md:px-12">
+
+                <!-- Section Header -->
+                <div class="flex items-end justify-between mb-16 metrics-header opacity-0 translate-y-10 relative z-20">
+                    <h2 class="text-3xl md:text-5xl font-black text-platinum tracking-tighter uppercase">
+                        SYSTEM STATUS//
+                    </h2>
+                    <div class="hidden md:flex flex-col items-end">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-mono text-gray-500">OPERATIONAL</span>
+                        </div>
+                        <span class="text-xs font-mono text-gray-700">SRV_LOC: [UNKNOWN]</span>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <!-- Card 1 -->
+                    <div
+                        class="metric-card bg-zinc-900/40 border border-white/5 p-8 backdrop-blur-md group hover:border-white/20 transition-all duration-500 opacity-0 translate-y-10">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="font-mono text-xs text-gray-500 tracking-widest">[UPTIME]</span>
+                            <svg class="w-6 h-6 text-gray-700 group-hover:text-platinum transition-colors" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="text-5xl font-black text-platinum mb-2 flex items-baseline">
+                            <span class="odometer" data-target="99.98">0</span>
+                            <span class="text-lg text-gray-600 ml-1">%</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-platinum w-0 transition-all duration-1000 group-hover:w-[99.98%]"
+                                style="transition-delay: 0.2s"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div
+                        class="metric-card bg-zinc-900/40 border border-white/5 p-8 backdrop-blur-md group hover:border-white/20 transition-all duration-500 opacity-0 translate-y-10">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="font-mono text-xs text-gray-500 tracking-widest">[ACTIVE_NODES]</span>
+                            <svg class="w-6 h-6 text-gray-700 group-hover:text-platinum transition-colors" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <div class="text-5xl font-black text-platinum mb-2 flex items-baseline">
+                            <span class="odometer" data-target="842">0</span>
+                        </div>
+                        <div class="flex gap-1" id="nodeGraph">
+                            <!-- JS will generate bars here -->
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div
+                        class="metric-card bg-zinc-900/40 border border-white/5 p-8 backdrop-blur-md group hover:border-white/20 transition-all duration-500 opacity-0 translate-y-10">
+                        <div class="flex justify-between items-start mb-12">
+                            <span class="font-mono text-xs text-gray-500 tracking-widest">[LATENCY]</span>
+                            <svg class="w-6 h-6 text-gray-700 group-hover:text-platinum transition-colors" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div class="text-5xl font-black text-platinum mb-2 flex items-baseline">
+                            <span class="text-sm text-platinum mr-2 font-mono">&lt;</span>
+                            <span class="odometer" data-target="12">0</span>
+                            <span class="text-lg text-gray-600 ml-1">ms</span>
+                        </div>
+                        <div class="flex items-center gap-1 h-1">
+                            <div class="w-full bg-gray-800 rounded-full h-full overflow-hidden">
+                                <div class="h-full bg-platinum w-0 animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. HOLOGRAPHIC PRICING: Glass Stack -->
+        <!-- NOTE: Transparent background for Warp Grid visibility -->
+        <section id="pricing"
+            class="relative min-h-screen py-32 bg-obsidian/40 backdrop-blur-sm flex items-center overflow-hidden">
+
+            <style>
+                /* CYBERPUNK UPGRADES CSS */
+
+                /* 1. Spotlight Border Effect */
+                .pricing-spotlight-overlay {
+                    background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+                            rgba(6, 182, 212, 0.4),
+                            transparent 40%);
+                    z-index: 1;
+                    opacity: 0;
+                    transition: opacity 0.5s;
+                }
+
+                .pricing-grid:hover .pricing-spotlight-overlay {
+                    opacity: 1;
+                }
+
+                /* 2. Liquid Button */
+                .btn-liquid {
+                    position: relative;
+                    overflow: hidden;
+                    z-index: 1;
+                }
+
+                .btn-liquid::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 0%;
+                    height: 100%;
+                    background: #fff;
+                    /* Liquid Color */
+                    z-index: -1;
+                    transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+                }
+
+                .btn-liquid:hover::before {
+                    width: 100%;
+                }
+
+                .btn-liquid:hover {
+                    color: black !important;
+                }
+
+                /* Border Glitch on Card Hover */
+                .card-glitch-border {
+                    transition: all 0.3s;
+                }
+
+                .pricing-card:hover .card-glitch-border {
+                    border-color: rgba(6, 182, 212, 0.5);
+                    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+                }
+            </style>
+
+            <!-- Iridescent Background Blob -->
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-gradient-to-tr from-violet-900/20 to-cyan-900/20 rounded-full blur-[120px] pointer-events-none animate-pulse">
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
+
+                <h2
+                    class="text-3xl md:text-5xl font-black text-platinum tracking-tighter uppercase mb-20 text-center pricing-title opacity-0 translate-y-10">
+                    ARCHITECTURAL TIERS
+                </h2>
+
+                <!-- PRICING CONTAINER (Spotlight Context) -->
+                <div id="pricingGrid" class="pricing-grid relative grid grid-cols-1 md:grid-cols-3 gap-8 p-1 group">
+
+                    <!-- Shared Spotlight Glow (Behind cars) -->
+                    <div class="pricing-spotlight-overlay absolute inset-0 pointer-events-none rounded-3xl"></div>
+
+                    <!-- Tier 1: CORE -->
+                    <div
+                        class="pricing-card group relative p-[1px] rounded-2xl overflow-hidden opacity-0 translate-y-20">
+                        <!-- Border Layer (Revealed by spotlight via CSS or z-index tricks, here simplified as border color change) -->
+                        <div
+                            class="card-glitch-border absolute inset-0 rounded-2xl border border-white/5 pointer-events-none z-20">
+                        </div>
+
+                        <div
+                            class="relative bg-zinc-900/90 backdrop-blur-xl p-8 rounded-2xl h-full z-10 transition-colors">
+                            <h3 class="text-xl font-mono text-gray-400 mb-4 tracking-widest">[CORE]</h3>
+                            <div class="text-4xl font-black text-platinum mb-8 h-10 flex items-center">
+                                <span class="hacker-price" data-value="$5k">$0</span>
+                                <span class="text-lg text-gray-600 font-normal ml-1">/mo</span>
+                            </div>
+                            <ul class="space-y-4 text-sm text-gray-400 font-mono mb-8">
+                                <li class="flex items-center gap-2"><span class="text-emerald-500">>></span> Essential
+                                    Systems</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-500">>></span> 99.9%
+                                    Uptime
+                                    SLA</li>
+                                <li class="flex items-center gap-2"><span class="text-emerald-500">>></span> Basic
+                                    Analytics
+                                </li>
+                            </ul>
+                            <a href="contact.html?budget=starter"
+                                class="magnetic-btn btn-liquid w-full py-4 border border-white/10 rounded-lg uppercase tracking-widest text-xs font-bold text-white transition-colors block text-center">Initialize</a>
+                        </div>
+                    </div>
+
+                    <!-- Tier 2: SCALE (Featured) -->
+                    <div
+                        class="pricing-card group relative p-[1px] rounded-2xl overflow-hidden opacity-0 translate-y-20">
+                        <div
+                            class="card-glitch-border absolute inset-0 rounded-2xl border border-white/10 pointer-events-none z-20">
+                        </div>
+
+                        <!-- Iridescent Border (subtle background) -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-cyan-500 via-violet-500 to-fuchsia-500 opacity-20 group-hover:opacity-100 transition-opacity animate-spin-slow">
+                        </div>
+                        <div
+                            class="relative bg-zinc-900/90 backdrop-blur-xl p-8 rounded-2xl h-full z-10 transition-colors">
+                            <div class="absolute top-0 right-0 p-4">
+                                <span
+                                    class="bg-white text-black text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest">Recommended</span>
+                            </div>
+                            <h3 class="text-xl font-mono text-platinum mb-4 tracking-widest">[SCALE]</h3>
+                            <div class="text-4xl font-black text-white mb-8 text-glow h-10 flex items-center">
+                                <span class="hacker-price" data-value="$12k">$0</span>
+                                <span class="text-lg text-gray-500 font-normal ml-1">/mo</span>
+                            </div>
+                            <ul class="space-y-4 text-sm text-gray-300 font-mono mb-8">
+                                <li class="flex items-center gap-2"><span class="text-cyan-400">>></span> Advanced
+                                    Architecture</li>
+                                <li class="flex items-center gap-2"><span class="text-cyan-400">>></span> Global CDN
+                                    Edge
+                                </li>
+                                <li class="flex items-center gap-2"><span class="text-cyan-400">>></span> AI-Driven
+                                    Insights
+                                </li>
+                                <li class="flex items-center gap-2"><span class="text-cyan-400">>></span> Priority
+                                    Engineering</li>
+                            </ul>
+                            <!-- Note: Changed background to transparent for liquid effect to work -->
+                            <a href="contact.html?budget=growth"
+                                class="magnetic-btn btn-liquid w-full py-4 border border-white rounded-lg uppercase tracking-widest text-xs font-bold text-white transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] block text-center">Deploy
+                                Scale</a>
+                        </div>
+                    </div>
+
+                    <!-- Tier 3: ENTERPRISE -->
+                    <div
+                        class="pricing-card group relative p-[1px] rounded-2xl overflow-hidden opacity-0 translate-y-20">
+                        <div
+                            class="card-glitch-border absolute inset-0 rounded-2xl border border-white/5 pointer-events-none z-20">
+                        </div>
+
+                        <div
+                            class="relative bg-zinc-900/90 backdrop-blur-xl p-8 rounded-2xl h-full z-10 transition-colors">
+                            <h3 class="text-xl font-mono text-gray-400 mb-4 tracking-widest">[ENTERPRISE]</h3>
+                            <div class="text-4xl font-black text-platinum mb-8 h-10 flex items-center">
+                                <span class="hacker-price" data-value="Custom">---</span>
+                            </div>
+                            <ul class="space-y-4 text-sm text-gray-400 font-mono mb-8">
+                                <li class="flex items-center gap-2"><span class="text-violet-500">>></span> Bespoke
+                                    Infrastructure</li>
+                                <li class="flex items-center gap-2"><span class="text-violet-500">>></span> Dedicated
+                                    Team</li>
+                                <li class="flex items-center gap-2"><span class="text-violet-500">>></span> 24/7 War
+                                    Room</li>
+                            </ul>
+                            <a href="contact.html?budget=enterprise"
+                                class="magnetic-btn btn-liquid w-full py-4 border border-white/10 rounded-lg uppercase tracking-widest text-xs font-bold text-white transition-colors block text-center">Contact
+                                Command</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MISSION SEQUENCE: Vertical Timeline -->
+        <section id="process" class="relative min-h-screen py-32 bg-obsidian/40 backdrop-blur-sm flex items-center">
+            <div class="max-w-7xl mx-auto px-6 md:px-12 w-full">
+
+                <div class="mb-20 text-center">
+                    <h2 class="text-3xl md:text-5xl font-black text-platinum tracking-tighter uppercase">MISSION
+                        PROTOCOL</h2>
+                </div>
+
+                <div
+                    class="relative grid grid-cols-[60px_1fr] md:grid-cols-[100px_1fr] gap-6 md:gap-12 max-w-4xl mx-auto">
+
+                    <!-- Vertical Line -->
+                    <div class="relative h-full">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full bg-white/10"></div>
+                        <div id="missionLineFill"
+                            class="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-0 bg-cyan-500 box-shadow-[0_0_15px_rgba(6,182,212,0.8)]">
+                        </div>
+                    </div>
+
+                    <!-- Steps -->
+                    <div class="space-y-32 py-12">
+
+                        <!-- Step 1 -->
+                        <div class="mission-step group relative opacity-50 transition-all duration-500">
+                            <!-- Node (Aligned to center of Col 1) 
+                                 Col 1 Center: 30px (mobile) / 50px (desktop)
+                                 Gap: 24px (mobile) / 48px (desktop)
+                                 Col 2 Start: 84px (mobile) / 148px (desktop)
+                                 Offset Needed: -54px (mobile) / -98px (desktop)
+                            -->
+                            <div
+                                class="absolute -left-[calc(30px+1.5rem)] md:-left-[calc(50px+3rem)] top-2 w-4 h-4 rounded-full bg-obsidian border border-white/20 group-[.active]:border-cyan-500 group-[.active]:bg-cyan-500 shadow-[0_0_0_0_rgba(6,182,212,0)] group-[.active]:shadow-[0_0_20px_2px_rgba(6,182,212,0.5)] transition-all duration-500 z-10">
+                            </div>
+
+
+                            <h3 class="text-2xl font-black text-platinum mb-4 uppercase flex items-center gap-4">
+                                <span class="text-cyan-500 text-sm font-mono">01//</span>
+                                <span class="mission-title" data-value="DISCOVERY">INIT</span>
+                            </h3>
+                            <p class="text-gray-400 font-mono text-sm leading-relaxed max-w-lg">
+                                We infiltrate your operational data. Mapping structural weaknesses and identifying
+                                high-leverage opportunities for digital intervention.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="mission-step group relative opacity-50 transition-all duration-500">
+                            <!-- Node -->
+                            <div
+                                class="absolute -left-[calc(30px+1.5rem)] md:-left-[calc(50px+3rem)] top-2 w-4 h-4 rounded-full bg-obsidian border border-white/20 group-[.active]:border-violet-500 group-[.active]:bg-violet-500 shadow-[0_0_0_0_rgba(139,92,246,0)] group-[.active]:shadow-[0_0_20px_2px_rgba(139,92,246,0.5)] transition-all duration-500 z-10">
+                            </div>
+
+
+                            <h3 class="text-2xl font-black text-platinum mb-4 uppercase flex items-center gap-4">
+                                <span class="text-violet-500 text-sm font-mono">02//</span>
+                                <span class="mission-title" data-value="ARCHITECTURE">PLAN</span>
+                            </h3>
+                            <p class="text-gray-400 font-mono text-sm leading-relaxed max-w-lg">
+                                Engineering the blueprint. We select the tech stack not by trend, but by raw performance
+                                metrics.
+                            </p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="mission-step group relative opacity-50 transition-all duration-500">
+                            <!-- Node -->
+                            <div
+                                class="absolute -left-[calc(30px+1.5rem)] md:-left-[calc(50px+3rem)] top-2 w-4 h-4 rounded-full bg-obsidian border border-white/20 group-[.active]:border-fuchsia-500 group-[.active]:bg-fuchsia-500 shadow-[0_0_0_0_rgba(217,70,239,0)] group-[.active]:shadow-[0_0_20px_2px_rgba(217,70,239,0.5)] transition-all duration-500 z-10">
+                            </div>
+
+
+                            <h3 class="text-2xl font-black text-platinum mb-4 uppercase flex items-center gap-4">
+                                <span class="text-fuchsia-500 text-sm font-mono">03//</span>
+                                <span class="mission-title" data-value="EXECUTION">BUILD</span>
+                            </h3>
+                            <p class="text-gray-400 font-mono text-sm leading-relaxed max-w-lg">
+                                Rapid-fire development cycles. Code is written, tested, and optimized in a vacuum-sealed
+                                environment to ensure zero defects.
+                            </p>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="mission-step group relative opacity-50 transition-all duration-500">
+                            <!-- Node -->
+                            <div
+                                class="absolute -left-[calc(30px+1.5rem)] md:-left-[calc(50px+3rem)] top-2 w-4 h-4 rounded-full bg-obsidian border border-white/20 group-[.active]:border-emerald-500 group-[.active]:bg-emerald-500 shadow-[0_0_0_0_rgba(16,185,129,0)] group-[.active]:shadow-[0_0_20px_2px_rgba(16,185,129,0.5)] transition-all duration-500 z-10">
+                            </div>
+
+
+                            <h3 class="text-2xl font-black text-platinum mb-4 uppercase flex items-center gap-4">
+                                <span class="text-emerald-500 text-sm font-mono">04//</span>
+                                <span class="mission-title" data-value="DEPLOYMENT">LIVE</span>
+                            </h3>
+                            <p class="text-gray-400 font-mono text-sm leading-relaxed max-w-lg">
+                                System launch. Global CDN propagation. We monitor the heartbeat of your new digital
+                                infrastructure.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. GRAVITATIONAL TECH ORBIT: The Core -->
+        <section id="tech"
+            class="relative min-h-screen py-32 bg-obsidian/40 backdrop-blur-sm flex items-center justify-center overflow-hidden perspective-[1000px]">
+
+            <!-- Central Text -->
+            <div class="absolute z-20 text-center pointer-events-none mix-blend-difference">
+                <h2 class="text-6xl md:text-9xl font-black text-white/10 tracking-tighter">STACK</h2>
+            </div>
+
+            <!-- 3D Orbit System (Scaled down on mobile) -->
+            <div id="orbitSystem"
+                class="relative w-[300px] h-[300px] md:w-[600px] md:h-[600px] transform-style-3d scale-75 md:scale-100 transition-transform duration-500">
+
+                <!-- Core -->
+                <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white shadow-[0_0_100px_rgba(255,255,255,0.5)] z-10 animate-pulse flex items-center justify-center">
+                    <span class="font-bold text-black tracking-widest text-xs">AETHER</span>
+                </div>
+
+                <!-- Ring 1 -->
+                <div
+                    class="orbit-ring-1 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-cyan-500/30">
+                    <div
+                        class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zinc-900 border border-cyan-500 flex items-center justify-center text-[10px] text-cyan-500 font-mono">
+                        RCT</div>
+                    <div
+                        class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-8 h-8 rounded-full bg-zinc-900 border border-cyan-500 flex items-center justify-center text-[10px] text-cyan-500 font-mono">
+                        TS</div>
+                </div>
+
+                <!-- Ring 2 -->
+                <div
+                    class="orbit-ring-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-full border border-violet-500/30">
+                    <div
+                        class="absolute left-0 top-1/2 -rotate-90 -translate-x-1/2 w-10 h-10 rounded-full bg-zinc-900 border border-violet-500 flex items-center justify-center text-[10px] text-violet-500 font-mono">
+                        NEXT</div>
+                    <div
+                        class="absolute right-0 top-1/2 rotate-90 translate-x-1/2 w-10 h-10 rounded-full bg-zinc-900 border border-violet-500 flex items-center justify-center text-[10px] text-violet-500 font-mono">
+                        NODE</div>
+                </div>
+
+                <!-- Ring 3 -->
+                <div
+                    class="orbit-ring-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-fuchsia-500/30">
+                    <div
+                        class="absolute top-[15%] left-[15%] w-6 h-6 rounded-full bg-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,1)]">
+                    </div>
+                    <div
+                        class="absolute bottom-[15%] right-[15%] w-6 h-6 rounded-full bg-fuchsia-500 shadow-[0_0_15px_rgba(217,70,239,1)]">
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 6. TESTIMONIALS: Depth Cards -->
+        <section id="testimonials"
+            class="relative min-h-[80vh] py-32 bg-obsidian/40 backdrop-blur-sm flex items-center overflow-hidden">
+
+            <!-- Background Grid (Rotated) -->
+            <div class="absolute inset-0 bg-grid-vertical opacity-10 rotate-12 scale-150 transform-origin-center"></div>
+
+            <div
+                class="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+                <!-- Text Side -->
+                <div>
+                    <h2 class="text-2xl md:text-5xl font-black text-platinum tracking-tighter uppercase mb-8">
+                        DATA <br /><span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-violet-500">RESONANCE</span>
+                    </h2>
+                    <p class="text-gray-400 font-mono text-sm leading-relaxed max-w-sm">
+                        Feedback from the digital frontier. Our partners demand precision, and we deliver bespoke
+                        architectures that scale infinitely.
+                    </p>
+                </div>
+
+                <!-- Parallax Cards Container -->
+                <div class="relative h-[400px] perspective-[1000px]">
+
+                    <!-- Card 1 (Back) -->
+                    <div
+                        class="testimonial-card absolute top-8 right-0 md:top-0 md:right-0 w-full md:w-[80%] bg-zinc-900/60 backdrop-blur-md border border-white/5 p-8 rounded-2xl transform translate-z-[-100px] opacity-40 scale-90">
+                        <p class="text-sm text-gray-400 font-mono italic mb-4">"Aether rewired our entire digital
+                            nervous system. The speed is terrifying."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-700 rounded-full"></div>
+                            <div>
+                                <p class="text-xs font-bold text-white">CTO, Nexus Corp</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (Middle) -->
+                    <div
+                        class="testimonial-card absolute top-12 right-0 md:top-[10%] md:right-[10%] w-full md:w-[80%] bg-zinc-900/80 backdrop-blur-md border border-white/10 p-8 rounded-2xl transform translate-z-[-50px] opacity-70 scale-95 shadow-xl">
+                        <p class="text-sm text-gray-300 font-mono italic mb-4">"Pure architectural elegance. They don't
+                            just write code; they compose it."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gray-600 rounded-full"></div>
+                            <div>
+                                <p class="text-xs font-bold text-white">Director, Vertex AI</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 (Front - Active) -->
+                    <div
+                        class="testimonial-card active-card absolute top-16 right-0 md:top-[20%] md:right-[20%] w-full md:w-[80%] bg-zinc-900 border border-cyan-500/30 p-8 rounded-2xl shadow-[0_0_30px_rgba(6,182,212,0.1)] transform translate-z-[0px] opacity-100 z-20">
+                        <p class="text-lg text-platinum font-bold tracking-tight mb-6">"Operating at this level requires
+                            absolute precision. Aether delivered a platform that feels alive."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full"></div>
+                            <div>
+                                <p class="text-sm font-bold text-white">Sarah Jenkins</p>
+                                <p class="text-[10px] text-cyan-400 font-mono">VP Product, Sypher Dynamics</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. WARP SPEED CTA: The Launch -->
+        <section id="cta" class="relative min-h-[70vh] flex flex-col items-center justify-center overflow-hidden">
+
+            <!-- Canvas layer for explosion -->
+            <canvas id="warpCanvas" class="absolute inset-0 pointer-events-none z-0"></canvas>
+
+            <div class="relative z-10 text-center">
+                <p class="text-xs font-mono text-cyan-500 mb-4 tracking-[0.3em]">SYSTEM READY</p>
+                <h2 class="text-5xl md:text-8xl font-black text-white tracking-tighter mb-12">
+                    INITIATE<br />SEQUENCE
+                </h2>
+
+                <!-- Warp Button -->
+                <button id="warpBtn"
+                    class="group relative w-64 h-64 rounded-full border border-white/10 bg-black flex items-center justify-center overflow-hidden transition-all duration-300 active:scale-95 select-none touch-none">
+                    <!-- Progress Ring -->
+                    <svg class="absolute inset-0 w-full h-full rotate-[-90deg]" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="#333" stroke-width="1" />
+                        <circle id="warpProgress" cx="50" cy="50" r="48" fill="none" stroke="#06b6d4" stroke-width="2"
+                            stroke-dasharray="301" stroke-dashoffset="301"
+                            class="transition-all duration-75 ease-linear" />
+                    </svg>
+
+                    <!-- Center Text -->
+                    <div class="relative z-10 flex flex-col items-center group-hover:scale-110 transition-transform">
+                        <span class="text-xs font-mono text-gray-500 mb-1 pointer-events-none">HOLD TO</span>
+                        <span class="text-xl font-bold text-white tracking-widest pointer-events-none">LAUNCH</span>
+                    </div>
+
+                    <!-- Inner Glow -->
+                    <div
+                        class="absolute inset-0 bg-cyan-500/10 rounded-full scale-0 group-active:scale-100 transition-transform duration-500 blur-xl">
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-12 bg-black border-t border-white/10 relative z-20">
+            <div
+                class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center md:items-end gap-8 md:gap-0">
+                <div class="text-center md:text-left">
+                    <h3 class="text-2xl font-bold tracking-widest text-white mb-2">AETHER</h3>
+                    <p class="text-xs text-gray-500 font-mono">BESPOKE DIGITAL ARCHITECTS</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <div
+                        class="flex gap-6 justify-center md:justify-end mb-4 text-xs font-mono text-gray-500 uppercase tracking-widest">
+                        <a href="https://www.linkedin.com/in/shashank-tareehal" target="_blank"
+                            class="hover:text-white transition-colors">LinkedIn</a>
+                        <a href="https://x.com/Shashank_5017" target="_blank"
+                            class="hover:text-white transition-colors">Twitter / X</a>
+                        <a href="https://www.instagram.com/shashank_5017/" target="_blank"
+                            class="hover:text-white transition-colors">Instagram</a>
+                    </div>
+                    <p class="text-[10px] text-gray-600 font-mono mb-1">SYSTEM_STATUS: [OFFLINE]</p>
+                    <p class="text-[10px] text-gray-700 font-mono">&copy; 2025 AETHER AGENCY.</p>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ==================================================================
+        // 0. MOBILE MENU LOGIC
+        // ==================================================================
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileToggleContainer = document.getElementById('mobile-toggle-container'); // Container for fade
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+        const menuTimeline = gsap.timeline({ paused: true });
+
+        // Setup Menu Animation
+        if (mobileMenu) {
+            menuTimeline.to(mobileMenu, { x: '0%', duration: 0.8, ease: 'power4.inOut' })
+                .to('.mobile-links > *', { x: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'power3.out' }, "-=0.4")
+                .to('.mobile-footer', { opacity: 1, duration: 0.5 }, "-=0.4");
+
+            gsap.set('.mobile-links > *', { x: 50, opacity: 0 });
+        }
+
+        function openMenu() {
+            if (!isMenuOpen) {
+                menuTimeline.play();
+                document.body.style.overflow = 'hidden';
+                if (mobileToggleContainer) {
+                    mobileToggleContainer.style.opacity = '0';
+                    mobileToggleContainer.style.pointerEvents = 'none';
+                }
+                isMenuOpen = true;
+            }
+        }
+
+        function closeMenu() {
+            if (isMenuOpen) {
+                menuTimeline.reverse();
+                document.body.style.overflow = '';
+                if (mobileToggleContainer) {
+                    mobileToggleContainer.style.opacity = '1';
+                    mobileToggleContainer.style.pointerEvents = 'auto';
+                }
+                isMenuOpen = false;
+            }
+        }
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', openMenu);
+        }
+
+        if (mobileClose) {
+            mobileClose.addEventListener('click', closeMenu);
+        }
+
+        // ==================================================================
+        // 11/10 POLISH: ADVANCED SCROLL EFFECTS
+        // ==================================================================
+
+        // 1. Connection Beam (Draws line down side based on scroll)
+        gsap.to('#connectionBeam', {
+            height: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.5
+            }
+        });
+
+        // 2. Parallax Debris (Floating Background Elements)
+        const debrisContainer = document.getElementById('parallaxDebris');
+        const debrisTypes = [
+            // Minimal SVG shapes
+            `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"><rect x="10" y="10" width="20" height="20" transform="rotate(45 20 20)"/></svg>`,
+            `<svg width="20" height="20" viewBox="0 0 20 20" fill="rgba(6,182,212,0.05)"><circle cx="10" cy="10" r="2"/></svg>`,
+            `<div class="text-[10px] font-mono text-white/5 tracking-widest">Sys.Init()</div>`,
+            `<div class="text-[10px] font-mono text-white/5 tracking-widest">0x4F92</div>`,
+            `<div class="w-24 h-[1px] bg-white/5"></div>`
+        ];
+
+        // Generate 15 random debris elements
+        for (let i = 0; i < 15; i++) {
+            const el = document.createElement('div');
+            el.classList.add('absolute', 'pointer-events-none');
+            el.innerHTML = debrisTypes[Math.floor(Math.random() * debrisTypes.length)];
+
+            // Random positioning
+            const top = Math.random() * 100;
+            const left = Math.random() * 100;
+            el.style.top = `${top}%`;
+            el.style.left = `${left}%`;
+
+            debrisContainer.appendChild(el);
+
+            // Parallax Animation (each moves at different speed)
+            const speed = (Math.random() - 0.5) * 200; // -100 to 100 movement
+
+            gsap.to(el, {
+                y: speed, // Move up or down relative to scroll
+                rotation: Math.random() * 360, // Slight rotation for some
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: 'body',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1
+                }
+            });
+        }
+
+        // ==================================================================
+        // 11/10 CREATIVITY: INFINITE WARP GRID
+        // ==================================================================
+
+        const canvas = document.getElementById('warpGrid');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let time = 0;
+        let speed = 2; // Base speed
+
+        // Resize handler
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Grid properties
+        const lines = [];
+        const numLines = 40;
+        const horizonY = height / 2; // Vanishing point Y (center)
+
+        // Scroll Velocity Tracker
+        let lastScrollY = window.scrollY;
+        let scrollVelocity = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            scrollVelocity = Math.abs(currentScrollY - lastScrollY);
+            lastScrollY = currentScrollY;
+        });
+
+        // Animation Loop
+        function animateGrid() {
+            // Fade effect (trail)
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Clear with slight transparency for trails
+            ctx.fillRect(0, 0, width, height);
+
+            // Update Speed based on scroll (max boost +20)
+            // Decay velocity smoothly
+            scrollVelocity *= 0.9;
+            const currentSpeed = speed + (scrollVelocity * 0.5);
+            time += currentSpeed;
+
+            // Center point
+            const cx = width / 2;
+            const cy = height / 2;
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'; // Platinum grid lines
+
+            // 1. Draw Horizon Lines (moving roughly towards camera)
+            // We simulate Z depth by exponential spacing
+            const offset = time % 100;
+            for (let i = 0; i < 20; i++) {
+                // z goes from 0 (far) to 1000 (near)
+                // We map i to a logarithmic scale for perspective
+                // Simple infinite tunnel effect: y = cy + (some_factor / z)
+
+                // Classic "Road" effect
+                let y = cy + (i * 20 + offset) * (i * 0.1); // Simple parallax math
+                if (y > height) y = y % height + cy; // Loop? No, simpler approach:
+            }
+
+            // BETTER APPROACH: Radial Tunnel (Warp Tunnel)
+            // Draw Concentric Squares growing outward
+            const tunnelSpeed = (time * 0.5) % 200; // Loop every 200px expansion
+
+            for (let i = 0; i < 15; i++) {
+                // Distance factor (0 is center, 1 is edge)
+                // We stagger them: i * 200 is gap. - tunnelSpeed makes them move In/Out.
+                let z = (i * 200) - tunnelSpeed;
+                if (z < 0) z += 3000; // Loop back to far distance
+                if (z > 3000) z -= 3000;
+
+                // Perspective projection
+                // fov = 300
+                const fov = 400;
+                const scale = fov / (fov + z);
+
+                if (scale < 0) continue;
+
+                const activeSize = Math.max(width, height) * 2; // Size of square at z=0
+                const s = activeSize * scale;
+
+                const alpha = Math.min(1, scale * 2); // Fade in as it approaches
+                ctx.strokeStyle = `rgba(234, 234, 234, ${alpha * 0.15})`;
+
+                ctx.strokeRect(cx - s / 2, cy - s / 2, s, s);
+            }
+
+            // 2. Draw Radial Lines (fixed)
+            // Lines radiating from center to edges
+            for (let i = 0; i < 16; i++) {
+                const angle = (i / 16) * Math.PI * 2;
+                // Rotate entire tunnel slowly??
+                const rot = time * 0.001;
+                const x1 = cx + Math.cos(angle + rot) * 50; // Inner radius (deadzone)
+                const y1 = cy + Math.sin(angle + rot) * 50;
+
+                const x2 = cx + Math.cos(angle + rot) * width; // Outer
+                const y2 = cy + Math.sin(angle + rot) * width;
+
+                ctx.strokeStyle = 'rgba(234, 234, 234, 0.05)';
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            // 3. Floating "Data Particles" (stars)
+            // ... (Could add later, but grid is cleaner)
+
+            requestAnimationFrame(animateGrid);
+        }
+        animateGrid();
+
+        // ==================================================================
+        // HELPER: Scramble Text on Scroll (Re-triggerable)
+        // ==================================================================
+        // Look for any element with .scramble-on-scroll class
+
+        // ... (Previous JS) ...
+
+        // ==================================================================
+        // CYBERPUNK PRICING UPGRADES (GSAP IMPLEMENTATION)
+        // ==================================================================
+
+        // 0. Metrics Outro (Restored)
+        gsap.to('#metrics', {
+            opacity: 0,
+            scale: 0.95,
+            filter: 'blur(10px)',
+            scrollTrigger: {
+                trigger: '#pricing',
+                start: 'top bottom', // When pricing top hits viewport bottom
+                end: 'top center',
+                scrub: 1
+            }
+        });
+
+        // 1. Spotlight Effect
+        const pricingGrid = document.getElementById('pricingGrid');
+        if (pricingGrid) {
+            pricingGrid.addEventListener('mousemove', (e) => {
+                const rect = pricingGrid.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                pricingGrid.style.setProperty('--mouse-x', `${x}px`);
+                pricingGrid.style.setProperty('--mouse-y', `${y}px`);
+            });
+        }
+
+        // 2. Anti-Gravity Floating Cards (Staggered Sine Waves)
+        const cards = document.querySelectorAll('.pricing-card');
+        cards.forEach((card, index) => {
+            // Randomize start float
+            gsap.to(card, {
+                y: -15, // Float amount
+                duration: 2 + Math.random(), // Random duration 2-3s
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                delay: index * 0.2 // Stagger start
+            });
+
+            // Hover: Pause Float & Glitch Scale
+            // Note: We use a separate timeline or tween controls for this
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, { scale: 1.02, duration: 0.3, ease: 'back.out(1.7)' });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { scale: 1, duration: 0.3 });
+            });
+        });
+
+        // 3. Hacker Text Decoding (Scramble Effect)
+        const scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+
+        function scrambleText(element, finalValue) {
+            let iterations = 0;
+            const maxIterations = 20; // How long to scramble
+
+            const interval = setInterval(() => {
+                element.innerText = finalValue.split("")
+                    .map((char, index) => {
+                        if (index < iterations) return finalValue[index];
+                        return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                    })
+                    .join("");
+
+                if (iterations >= finalValue.length) {
+                    clearInterval(interval);
+                    element.innerText = finalValue; // Ensure clean final state
+                }
+
+                iterations += 1 / 3; // Speed of reveal
+            }, 30);
+        }
+
+        ScrollTrigger.create({
+            trigger: '#pricingGrid',
+            start: 'top 60%',
+            onEnter: () => {
+                document.querySelectorAll('.hacker-price').forEach(el => {
+                    scrambleText(el, el.getAttribute('data-value'));
+                });
+            }
+        });
+
+        // 4. Magnetic Buttons (Physics-Based Attraction)
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+
+            const xTo = gsap.quickTo(btn, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
+            const yTo = gsap.quickTo(btn, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
+
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+
+                // Magnet strength
+                xTo(x * 0.3);
+                yTo(y * 0.3);
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                xTo(0);
+                yTo(0);
+            });
+        });
+
+        // Re-bind Pricing Entrance Animation to new elements
+        const pricingTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#pricing',
+                start: 'top 70%',
+            }
+        });
+
+        pricingTL.to('.pricing-title', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out'
+        })
+            // Updated to target cards correctly with their new initial state
+            .to('.pricing-card', {
+                opacity: 1,
+                // Note: We don't animate Y here to 0 because floating animation handles Y.
+                // We just want them to appear. OR we animate from an offset.
+                // Let's just animate opacity and slight scale? 
+                // Getting conflict with float? No, float is relative if using x/yPercent or transforms carefully.
+                // Simple opacity fade is safest for now to avoid fighting the float loop.
+                duration: 0.8,
+                stagger: 0.2,
+                ease: 'power2.out'
+            }, '-=0.4');
+
+        // 3. 3D Tilt Effect for Pricing Cards
+        document.querySelectorAll('.pricing-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Calculate rotation (max 10deg)
+                const xPct = (x / rect.width - 0.5) * 20; // -10 to 10
+                const yPct = (y / rect.height - 0.5) * -20; // Invert Y
+
+                gsap.to(card, {
+                    rotationY: xPct,
+                    rotationX: yPct,
+                    transformPerspective: 1000,
+                    ease: 'power1.out',
+                    duration: 0.5
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotationY: 0,
+                    rotationX: 0,
+                    ease: 'power3.out',
+                    duration: 0.8
+                });
+            });
+        });
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-obsidian/70', 'backdrop-blur-md', 'border-b', 'border-white/10');
+            } else {
+                navbar.classList.remove('bg-obsidian/70', 'backdrop-blur-md', 'border-b', 'border-white/10');
+            }
+        });
+
+        // Spotlight Effect
+        const spotlight = document.getElementById('spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.setProperty('--mouse-x', `${e.clientX}px`);
+            spotlight.style.setProperty('--mouse-y', `${e.clientY}px`);
+            spotlight.style.opacity = '1';
+        });
+
+        // ==================================================================
+        // HERO: ELEGANT ENTRANCE SEQUENCE
+        // ==================================================================
+
+        // Timeline for entrance
+        const entranceTL = gsap.timeline({ delay: 0.5 });
+
+        // Phase 1: Draw semicircle arrows (1.5s)
+        entranceTL.to('#arrowTopLeft', {
+            strokeDashoffset: 0,
+            duration: 1.5,
+            ease: 'power2.inOut'
+        }, 0)
+            .to('#arrowBottomRight', {
+                strokeDashoffset: 0,
+                duration: 1.5,
+                ease: 'power2.inOut'
+            }, 0)
+            // Arrow heads appear
+            .to('#arrowHead1', {
+                opacity: 1,
+                duration: 0.3
+            }, 1.2)
+            .to('#arrowHead2', {
+                opacity: 1,
+                duration: 0.3
+            }, 1.2)
+
+            // Phase 2: Text reveal - each line slides up (staggered)
+            .to('.hero-text', {
+                opacity: 1,
+                duration: 0.01
+            }, 1.5)
+            .from('.hero-line span', {
+                y: 120,
+                opacity: 0,
+                duration: 1.2,
+                stagger: 0.15,
+                ease: 'power3.out'
+            }, 1.6)
+
+            // Phase 3: Subtitle and scroll indicator
+            .to('#heroSubtitle', {
+                opacity: 1,
+                y: -10,
+                duration: 1,
+                ease: 'power2.out'
+            }, 2.8)
+            .to('#scrollIndicator', {
+                opacity: 0.5,
+                duration: 0.8
+            }, 3.2);
+
+        // ==================================================================
+        // HERO: OUTRO (Scroll Effect)
+        // ==================================================================
+
+        gsap.to('#heroContent', {
+            opacity: 0,
+            scale: 0.9,
+            y: -100,
+            scrollTrigger: {
+                trigger: '#hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1
+            }
+        });
+
+        // ==================================================================
+        // 2. METRICS: SYSTEM STATUS ANIMATIONS
+        // ==================================================================
+
+        // A. Generate Node Graph
+        const nodeGraph = document.getElementById('nodeGraph');
+        for (let i = 0; i < 40; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'w-1 bg-gray-800 rounded-sm hover:bg-cyan-500 transition-colors duration-300';
+            // Random height between 20% and 100%
+            bar.style.height = Math.floor(Math.random() * 80 + 20) + '%';
+            nodeGraph.appendChild(bar);
+
+            // Animate bars randomly
+            gsap.to(bar, {
+                height: Math.floor(Math.random() * 80 + 20) + '%',
+                duration: Math.random() * 1 + 0.5,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+                delay: Math.random() * 2
+            });
+        }
+
+        // B. Intro Animation (Staggered Entrance)
+        const metricsTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#metrics',
+                start: 'top 80%',
+            }
+        });
+
+        metricsTL.to('.metrics-header', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out'
+        })
+            .to('.metric-card', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: 'power3.out',
+                onComplete: startCounters // Start counting when cards appear
+            }, '-=0.4');
+
+        // C. Counter Animation (Odometer Effect)
+        function startCounters() {
+            const odometers = document.querySelectorAll('.odometer');
+
+            odometers.forEach(el => {
+                const target = parseFloat(el.getAttribute('data-target'));
+                // Animate from 0 to target
+                gsap.to(el, {
+                    textContent: target,
+                    duration: 2,
+                    snap: { textContent: 0.1 }, // Snap to decimal if needed
+                    ease: 'power4.out',
+                    onUpdate: function () {
+                        // Format number during animation
+                        if (target % 1 === 0) {
+                            // Integer
+                            el.textContent = Math.round(this.targets()[0].textContent);
+                        } else {
+                            // Float (2 decimals)
+                            el.textContent = parseFloat(this.targets()[0].textContent).toFixed(2);
+                        }
+                    }
+                });
+            });
+        }
+
+        // ==================================================================
+        // 6. TESTIMONIALS: ALIVE (Float + Tilt)
+        // ==================================================================
+        const testimonialCards = document.querySelectorAll('.testimonial-card');
+        testimonialCards.forEach((card, index) => {
+            // A. Ambient Float (Anti-Gravity)
+            // Staggered sine wave so they don't move in sync
+            gsap.to(card, {
+                y: -10, // Gentle float
+                duration: 2 + Math.random(),
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                delay: index * 0.3
+            });
+
+            // B. Interactive 3D Tilt
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Calculate rotation (max 10deg)
+                const xPct = (x / rect.width - 0.5) * 20;
+                const yPct = (y / rect.height - 0.5) * -20;
+
+                gsap.to(card, {
+                    rotationY: xPct,
+                    rotationX: yPct,
+                    transformPerspective: 1000,
+                    ease: 'power1.out',
+                    duration: 0.5
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotationY: 0,
+                    rotationX: 0,
+                    ease: 'power3.out',
+                    duration: 0.8
+                });
+            });
+        });
+
+
+        // ==================================================================
+        // PHASE 4: PROCESS & TECH (ENGINE ROOM)
+        // ==================================================================
+
+        // 1. Mission Sequence (Timeline)
+        // Draw the line
+        gsap.to('#missionLineFill', {
+            height: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#process',
+                start: 'top center',
+                end: 'bottom center',
+                scrub: 0.5
+            }
+        });
+
+        // Activate Nodes
+        const steps = document.querySelectorAll('.mission-step');
+        steps.forEach((step, i) => {
+            ScrollTrigger.create({
+                trigger: step,
+                start: 'top 60%',
+                onEnter: () => {
+                    step.classList.add('active');
+                    // Scramble the title
+                    const title = step.querySelector('.mission-title');
+                    if (title) scrambleText(title, title.getAttribute('data-value'));
+                }
+            });
+        });
+
+        // 2. Gravitational Tech Orbit
+        // Rotate the rings
+        gsap.to('.orbit-ring-1', { rotation: 360, duration: 20, repeat: -1, ease: 'none' });
+        gsap.to('.orbit-ring-2', { rotation: -360, duration: 25, repeat: -1, ease: 'none' });
+        gsap.to('.orbit-ring-3', { rotation: 360, duration: 30, repeat: -1, ease: 'none' });
+
+        // Icons counter-rotate to stay upright? Or just let them spin.
+        // Let's keep it simple: Orbiting dots/icons.
+
+        // Mouse Interaction for Orbit Tilt
+        const techSection = document.getElementById('tech');
+        if (techSection) {
+            techSection.addEventListener('mousemove', (e) => {
+                const rect = techSection.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                gsap.to('#orbitSystem', {
+                    rotationY: x * 30,
+                    rotationX: -y * 30,
+                    ease: 'power2.out',
+                    duration: 1
+                });
+            });
+        }
+
+        // ==================================================================
+        // 7. WARP SPEED CTA: Launch Sequence
+        // ==================================================================
+        const warpBtn = document.getElementById('warpBtn');
+        const warpProgress = document.getElementById('warpProgress');
+        const warpCanvas = document.getElementById('warpCanvas');
+        let warpTimer;
+        let isLaunching = false;
+
+        if (warpBtn && warpProgress && warpCanvas) {
+            const ctx = warpCanvas.getContext('2d');
+            let width, height;
+
+            function resizeWarp() {
+                width = warpCanvas.width = warpCanvas.parentElement.offsetWidth;
+                height = warpCanvas.height = warpCanvas.parentElement.offsetHeight;
+            }
+            window.addEventListener('resize', resizeWarp);
+            resizeWarp();
+
+            // Particle System
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = (Math.random() - 0.5) * 20;
+                    this.vy = (Math.random() - 0.5) * 20;
+                    this.life = 1;
+                    this.color = `hsl(${Math.random() * 60 + 180}, 100%, 50%)`; // Cyan/Blue
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.life -= 0.02;
+                }
+                draw() {
+                    ctx.globalAlpha = this.life;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, Math.random() * 4 + 1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            let particles = [];
+            function animateExplosion() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach((p, i) => {
+                    p.update();
+                    p.draw();
+                    if (p.life <= 0) particles.splice(i, 1);
+                });
+                if (particles.length > 0) requestAnimationFrame(animateExplosion);
+            }
+
+            function createExplosion() {
+                // Flash screen
+                gsap.to('body', { backgroundColor: '#ffffff', duration: 0.1, yoyo: true, repeat: 1 });
+
+                // Spawn particles
+                for (let i = 0; i < 100; i++) {
+                    particles.push(new Particle(width / 2, height / 2));
+                }
+                animateExplosion();
+            }
+
+            // Interaction
+            function startCharge() {
+                if (isLaunching) return;
+
+                // Animate progress stroke
+                // 301 is roughly the circumference of r=48 (2*PI*48 ~= 301.59)
+                gsap.to(warpProgress, {
+                    strokeDashoffset: 0,
+                    duration: 1.5,
+                    ease: 'none',
+                    onComplete: launch
+                });
+
+                // Scale button
+                gsap.to(warpBtn, { scale: 0.95, duration: 1.5 });
+            }
+
+            function abortCharge() {
+                if (isLaunching) return;
+
+                // Kill tween
+                gsap.killTweensOf(warpProgress);
+                gsap.killTweensOf(warpBtn);
+
+                // Reset
+                gsap.to(warpProgress, { strokeDashoffset: 301, duration: 0.3, ease: 'power2.out' });
+                gsap.to(warpBtn, { scale: 1, duration: 0.3 });
+            }
+
+            function launch() {
+                isLaunching = true;
+                createExplosion();
+
+                // Text feedback
+                warpBtn.querySelector('span:nth-child(2)').innerText = "LAUNCHING...";
+
+                // Navigate after explosion
+                setTimeout(() => {
+                    window.location.href = 'contact.html';
+                }, 1000);
+            }
+
+            // Bind Events
+            warpBtn.addEventListener('mousedown', startCharge);
+            warpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startCharge(); });
+
+            warpBtn.addEventListener('mouseup', abortCharge);
+            warpBtn.addEventListener('mouseleave', abortCharge);
+            warpBtn.addEventListener('touchend', abortCharge);
+        }
+    </script>
+
+    <script src="cursor.js"></script>
+    <script src="dot-ring-cursor.js"></script>
+</body>
+
+</html>

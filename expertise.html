@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <title>Expertise | AETHER</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#050505',
+                        charcoal: '#0a0a0a',
+                        platinum: '#EAEAEA',
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                    },
+                    backgroundImage: {
+                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #EAEAEA;
+            overflow-x: hidden;
+            opacity: 0;
+            animation: pageFadeIn 1s ease-out forwards;
+        }
+
+        @keyframes pageFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .service-card-stack {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Footer 3D Styles */
+        .stroke-text {
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-3d-stage {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+    </style>
+</head>
+
+<body class="bg-obsidian text-platinum antialiased selection:bg-white/20">
+
+    <!-- Noise Overlay -->
+    <div class="fixed inset-0 z-[60] pointer-events-none opacity-[0.07] mix-blend-overlay">
+        <div class="absolute inset-0 bg-noise w-full h-full animate-pulse"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-[100] px-6 md:px-12 py-6 md:py-8 flex justify-between items-center transition-all duration-700 ease-in-out pointer-events-auto mix-blend-difference"
+        id="navbar">
+        <div class="flex-1">
+            <a href="index.html"
+                class="text-xl md:text-2xl font-bold tracking-[0.2em] text-white hover:opacity-80 transition-opacity cursor-pointer relative z-[101]">AETHER</a>
+        </div>
+
+        <div class="hidden md:flex gap-12 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300">
+            <a href="index.html" class="relative group py-2 block cursor-pointer z-[101]">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">Home
+                    </div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Home</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left"></span>
+            </a>
+
+            <a href="expertise.html" class="relative group py-2 block text-white cursor-pointer z-[101]">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">
+                        Expertise</div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Expertise</div>
+                </div>
+                <!-- Active State -->
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-100 transition-transform duration-300 ease-out"></span>
+            </a>
+
+            <a href="work.html" class="relative group py-2 block cursor-pointer z-[101]">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">Work
+                    </div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Work</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left"></span>
+            </a>
+
+            <a href="agency.html" class="relative group py-2 block cursor-pointer z-[101]">
+                <div class="relative overflow-hidden">
+                    <div class="block transition-transform duration-300 ease-in-out group-hover:-translate-y-full">
+                        Agency</div>
+                    <div
+                        class="absolute top-0 left-0 w-full block transition-transform duration-300 ease-in-out translate-y-full group-hover:translate-y-0 text-white">
+                        Agency</div>
+                </div>
+                <span
+                    class="absolute bottom-1 left-0 w-full h-[1px] bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left"></span>
+            </a>
+        </div>
+
+        <div class="flex-1 flex justify-end items-center relative z-[102]">
+
+            <!-- Mobile Toggle -->
+            <div class="md:hidden transition-opacity duration-300" id="mobile-toggle-container">
+                <button id="mobile-toggle"
+                    class="group relative px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-3 overflow-hidden transition-all duration-300 active:scale-95">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Menu</span>
+                    <div class="flex flex-col gap-[4px] items-end">
+                        <span class="h-[1px] bg-white w-5 group-hover:w-3 transition-all duration-300"></span>
+                        <span class="h-[1px] bg-white w-3 group-hover:w-5 transition-all duration-300"></span>
+                    </div>
+                </button>
+            </div>
+
+            <a href="contact.html"
+                class="hidden md:inline-block relative overflow-hidden px-6 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors group cursor-pointer z-[101]">
+                <span class="relative z-10 text-[10px] font-bold uppercase tracking-widest block">Let's Talk</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-menu"
+        class="fixed inset-0 z-[1001] bg-obsidian/90 backdrop-blur-xl w-full h-screen transform translate-x-full md:hidden flex flex-col pt-32 px-8">
+        <div class="absolute top-0 left-0 w-full h-full bg-noise opacity-[0.05] pointer-events-none"></div>
+
+        <button id="mobile-close"
+            class="absolute top-6 right-6 z-[1003] p-4 text-white hover:rotate-90 transition-transform duration-500 ease-out">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <div class="mobile-links flex flex-col items-start gap-8 relative z-10">
+            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Navigation</span>
+
+            <a href="index.html"
+                class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">01</span>Home
+            </a>
+            <a href="expertise.html"
+                class="text-5xl font-light uppercase tracking-tight text-white italic relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">02</span>Expertise
+            </a>
+            <a href="work.html"
+                class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">03</span>Work
+            </a>
+            <a href="agency.html"
+                class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+                <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">04</span>Agency
+            </a>
+        </div>
+
+        <div class="mt-auto mb-12 w-full mobile-footer opacity-0 relative z-10">
+            <div class="w-full h-[1px] bg-white/10 mb-8"></div>
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Start a project</span>
+                <a href="contact.html"
+                    class="text-sm font-bold uppercase tracking-widest text-black bg-white px-6 py-3 rounded-full">Let's
+                    Talk</a>
+            </div>
+            <div class="mt-8 text-[10px] text-gray-700 font-mono tracking-widest uppercase text-center">© Aether Agency
+                2025</div>
+        </div>
+    </div>
+
+
+    <!-- MAIN CONTENT: STACKING CARDS -->
+    <div class="service-card-stack relative w-full">
+
+        <!-- KINETIC HERO (Vandslab Style Refined) -->
+        <section
+            class="h-[100vh] flex flex-col items-center justify-center bg-obsidian relative overflow-hidden text-center"
+            id="expertise-hero">
+            <div class="absolute inset-0 bg-grid-vertical opacity-10"></div>
+
+            <!-- Overlapping Centered Typography -->
+            <div class="relative z-10 flex flex-col items-center justify-center">
+
+                <!-- SYSTEM -->
+                <div class="relative mix-blend-difference mb-[-8vw] md:mb-[-6vw] z-20 overflow-hidden">
+                    <h1 class="text-[18vw] leading-none font-black tracking-tighter text-white perspective-text opacity-0 transform translate-y-full blur-xl"
+                        id="system-text">
+                        SYSTEM
+                    </h1>
+                </div>
+
+                <!-- LOGIC -->
+                <div class="relative mix-blend-difference z-10 overflow-hidden">
+                    <h1 class="text-[18vw] leading-none font-black tracking-tighter text-gray-500 perspective-text opacity-0 transform -translate-y-full blur-xl"
+                        id="logic-text">
+                        LOGIC
+                    </h1>
+                </div>
+
+            </div>
+
+            <div
+                class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 mix-blend-difference z-30">
+                <div class="w-[1px] h-0 bg-white" id="hero-line"></div>
+                <!-- Data Beam Connector -->
+                <div class="absolute top-full left-1/2 -translate-x-1/2 w-[1px] bg-cyan-500/50 h-[0vh] z-0"
+                    id="data-beam"></div>
+                <span class="text-[10px] font-mono text-gray-400 tracking-[0.3em] uppercase opacity-0"
+                    id="scroll-hint">Scroll to Decode</span>
+            </div>
+        </section>
+
+        <!-- SENTIENCE NODE (Bridge Section) -->
+        <section class="min-h-[40vh] flex flex-col items-center justify-center bg-obsidian relative z-[5]"
+            id="sentience-node">
+            <div class="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
+                <!-- Animated Rings SVG -->
+                <svg viewBox="0 0 100 100" class="w-full h-full opacity-50 mix-blend-screen" id="node-svg">
+                    <circle cx="50" cy="50" r="45" stroke="white" stroke-width="0.5" fill="none" class="node-ring" />
+                    <circle cx="50" cy="50" r="35" stroke="white" stroke-width="0.5" fill="none" class="node-ring"
+                        style="opacity: 0.6" />
+                    <circle cx="50" cy="50" r="25" stroke="white" stroke-width="0.5" fill="none" class="node-ring"
+                        style="opacity: 0.4" />
+                    <path d="M50 5 L50 95 M5 50 L95 50" stroke="white" stroke-width="0.2" class="node-axis" />
+                    <rect x="35" y="35" width="30" height="30" stroke="white" stroke-width="0.5" fill="none"
+                        class="node-core" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span
+                        class="text-[10px] font-mono text-cyan-500 tracking-widest animate-pulse">AETHER_CORE::ONLINE</span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- CARD 1: DIGITAL ARCHITECTURE (Cyan) -->
+        <section
+            class="sticky top-0 h-[100svh] w-full bg-obsidian border-t border-white/10 z-10 flex flex-col justify-center overflow-hidden service-card-section perspective-container">
+            <div class="absolute inset-0 pointer-events-none">
+                <!-- Mouse Follow Blob -->
+                <div
+                    class="mouse-glow absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-1000 ease-out">
+                </div>
+            </div>
+
+            <div
+                class="max-w-[1600px] mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative z-10 h-full items-center tilt-card">
+                <!-- Left: Number -->
+                <div
+                    class="flex flex-col justify-center h-full border-b md:border-b-0 md:border-r border-white/10 pb-8 md:pb-0 card-content-left">
+                    <span class="text-[15vw] md:text-[12vw] font-black text-white/5 leading-none select-none">01</span>
+                </div>
+
+                <!-- Right: Content -->
+                <div class="flex flex-col justify-center card-content-right">
+                    <h2
+                        class="animate-text text-4xl md:text-7xl font-bold uppercase tracking-tighter mb-8 leading-tight">
+                        Digital<br><span class="text-cyan-400">Architecture</span>
+                    </h2>
+                    <p class="animate-text text-gray-400 text-lg md:text-2xl font-light leading-relaxed max-w-xl mb-12">
+                        We reject templates. We engineer bespoke, headless environments where every pixel serves a
+                        purpose and every interaction is calculated for impact.
+                    </p>
+
+                    <div class="animate-text flex flex-wrap gap-4">
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">React</span>
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">WebGL</span>
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Next.js</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARD 2: VISUAL IDENTITY (Violet) -->
+        <section
+            class="sticky top-0 h-[100svh] w-full bg-obsidian border-t border-white/10 z-20 flex flex-col justify-center overflow-hidden service-card-section perspective-container">
+            <div class="absolute inset-0 pointer-events-none">
+                <div
+                    class="mouse-glow absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-violet-500/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-1000 ease-out">
+                </div>
+            </div>
+
+            <div
+                class="max-w-[1600px] mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative z-10 h-full items-center tilt-card">
+                <div
+                    class="flex flex-col justify-center h-full border-b md:border-b-0 md:border-r border-white/10 pb-8 md:pb-0 card-content-left">
+                    <span class="text-[15vw] md:text-[12vw] font-black text-white/5 leading-none select-none">02</span>
+                </div>
+                <div class="flex flex-col justify-center card-content-right">
+                    <h2
+                        class="animate-text text-4xl md:text-7xl font-bold uppercase tracking-tighter mb-8 leading-tight">
+                        Visual<br><span class="text-violet-400">Identity</span>
+                    </h2>
+                    <p class="animate-text text-gray-400 text-lg md:text-2xl font-light leading-relaxed max-w-xl mb-12">
+                        A brand is a living operating system. We forge complete visual ecosystems—from typography to
+                        color theory—that command market authority.
+                    </p>
+                    <div class="animate-text flex flex-wrap gap-4">
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Generative
+                            AI</span>
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Vector
+                            Logic</span>
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Motion</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARD 3: NARRATIVE STRATEGY (Orange) -->
+        <section
+            class="sticky top-0 h-[100svh] w-full bg-obsidian border-t border-white/10 z-30 flex flex-col justify-center overflow-hidden service-card-section perspective-container">
+            <div class="absolute inset-0 pointer-events-none">
+                <div
+                    class="mouse-glow absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-orange-500/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-1000 ease-out">
+                </div>
+            </div>
+
+            <div
+                class="max-w-[1600px] mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative z-10 h-full items-center tilt-card">
+                <div
+                    class="flex flex-col justify-center h-full border-b md:border-b-0 md:border-r border-white/10 pb-8 md:pb-0 card-content-left">
+                    <span class="text-[15vw] md:text-[12vw] font-black text-white/5 leading-none select-none">03</span>
+                </div>
+                <div class="flex flex-col justify-center card-content-right">
+                    <h2
+                        class="animate-text text-4xl md:text-7xl font-bold uppercase tracking-tighter mb-8 leading-tight">
+                        Narrative<br><span class="text-orange-400">Strategy</span>
+                    </h2>
+                    <p class="animate-text text-gray-400 text-lg md:text-2xl font-light leading-relaxed max-w-xl mb-12">
+                        Verbal engineering that drives revenue. We use data-driven linguistics to craft copy that
+                        converts human psychology into action.
+                    </p>
+                    <div class="animate-text flex flex-wrap gap-4">
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">LLM
+                            Tuning</span>
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Semantic
+                            Analysis</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CARD 4: SEARCH ECOLOGY (Emerald) -->
+        <section
+            class="sticky top-0 h-[100svh] w-full bg-obsidian border-t border-white/10 z-40 flex flex-col justify-center overflow-hidden service-card-section perspective-container">
+            <div class="absolute inset-0 pointer-events-none">
+                <div
+                    class="mouse-glow absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-1000 ease-out">
+                </div>
+            </div>
+
+            <div
+                class="max-w-[1600px] mx-auto w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative z-10 h-full items-center tilt-card">
+                <div
+                    class="flex flex-col justify-center h-full border-b md:border-b-0 md:border-r border-white/10 pb-8 md:pb-0 card-content-left">
+                    <span class="text-[15vw] md:text-[12vw] font-black text-white/5 leading-none select-none">04</span>
+                </div>
+                <div class="flex flex-col justify-center card-content-right">
+                    <h2
+                        class="animate-text text-4xl md:text-7xl font-bold uppercase tracking-tighter mb-8 leading-tight">
+                        Search<br><span class="text-emerald-400">Ecology</span>
+                    </h2>
+                    <p class="animate-text text-gray-400 text-lg md:text-2xl font-light leading-relaxed max-w-xl mb-12">
+                        Dominance through semantic structure. We optimize Core Web Vitals to ensure your site dominates
+                        global rankings.
+                    </p>
+                    <div class="animate-text flex flex-wrap gap-4">
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Core
+                            Web Vitals</span>
+                        <span
+                            class="px-6 py-3 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors cursor-none">Schema</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THE ARSENAL (Tech Stack) -->
+        <section class="relative z-50 bg-neutral-900 py-32 px-6 md:px-12 overflow-hidden border-t-2 border-white/10">
+            <div class="max-w-[1600px] mx-auto mb-16">
+                <h2 class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">The Arsenal</h2>
+                <h3 class="text-5xl font-light text-white">COMMAND LINE READY.</h3>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-[1px] bg-white/10 border border-white/10">
+                <!-- Grid Items with Premium Hover Effects -->
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">01</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">React
+                            19</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            Concurrent UI framework</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-violet-500/0 to-violet-500/0 group-hover:from-violet-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">02</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">TypeScript</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            Type-safe development</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">03</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">Node.js</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            Server-side runtime</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-orange-500/0 to-orange-500/0 group-hover:from-orange-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">04</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">Python</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            AI & data processing</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-pink-500/0 group-hover:from-pink-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">05</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">WebGL</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            3D graphics rendering</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-yellow-500/0 to-yellow-500/0 group-hover:from-yellow-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">06</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">GSAP</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            Premium animations</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/0 group-hover:from-green-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">07</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">MongoDB</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            NoSQL database</p>
+                    </div>
+                </div>
+                <div
+                    class="tech-item aspect-square bg-obsidian p-6 flex flex-col justify-between relative overflow-hidden cursor-pointer group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/20 group-hover:to-transparent transition-all duration-700 pointer-events-none">
+                    </div>
+                    <span
+                        class="text-xs font-mono opacity-50 group-hover:opacity-100 transition-opacity relative z-10">08</span>
+                    <div class="relative z-10">
+                        <span
+                            class="text-xl font-bold block group-hover:scale-110 transition-transform duration-500 ease-out">Docker</span>
+                        <p
+                            class="text-xs font-mono text-gray-500 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out mt-2">
+                            Containerization</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer
+            class="relative min-h-screen bg-obsidian z-50 flex flex-col justify-between overflow-hidden footer-3d-stage perspective-[1000px]">
+
+            <!-- Background Elements -->
+            <div class="absolute inset-0 z-0">
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,0,255,0.05),transparent_60%)]">
+                </div>
+            </div>
+
+            <div
+                class="flex-1 flex flex-col items-center justify-center relative z-10 footer-content-wrapper transform-style-3d">
+                <div class="group relative cursor-pointer text-center">
+                    <h2
+                        class="text-[15vw] font-black tracking-tighter leading-[0.85] text-transparent stroke-text transition-all duration-700 group-hover:text-white/10 mix-blend-overlay select-none">
+                        READY
+                    </h2>
+                    <h2
+                        class="text-[15vw] font-black tracking-tighter leading-[0.85] text-white select-none relative z-10 text-glow">
+                        TO BUILD?
+                    </h2>
+
+                    <!-- Floating Action Button -->
+                    <a href="contact.html"
+                        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 bg-white rounded-full flex items-center justify-center magnetic-btn hover:scale-110 transition-transform duration-500 z-20 mix-blend-difference">
+                        <span
+                            class="text-black font-black uppercase tracking-widest text-sm md:text-base animate-pulse">Let's
+                            Talk</span>
+                    </a>
+                </div>
+            </div>
+
+            <div
+                class="flex flex-col md:flex-row justify-between items-center md:items-end px-6 md:px-12 py-12 border-t border-white/10 relative z-20 bg-obsidian gap-8 md:gap-0">
+                <div class="text-center md:text-left">
+                    <h3 class="text-2xl font-bold tracking-widest text-white mb-2">AETHER</h3>
+                    <p class="text-xs text-gray-500 font-mono">BESPOKE DIGITAL ARCHITECTS</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <div
+                        class="flex gap-6 justify-center md:justify-end mb-4 text-xs font-mono text-gray-500 uppercase tracking-widest">
+                        <a href="https://www.linkedin.com/in/shashank-tareehal" target="_blank"
+                            class="hover:text-white transition-colors">LinkedIn</a>
+                        <a href="https://x.com/Shashank_5017" target="_blank"
+                            class="hover:text-white transition-colors">Twitter / X</a>
+                        <a href="https://www.instagram.com/shashank_5017/" target="_blank"
+                            class="hover:text-white transition-colors">Instagram</a>
+                    </div>
+                    <p class="text-[10px] text-gray-600 font-mono mb-1">SYSTEM_STATUS: [OFFLINE]</p>
+                    <p class="text-[10px] text-gray-700 font-mono">&copy; 2025 AETHER AGENCY.</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // 1. Lenis Smooth Scroll
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof Lenis !== 'undefined') {
+                const lenis = new Lenis({
+                    lerp: 0.05,
+                    wheelMultiplier: 0.8,
+                    smoothWheel: true,
+                });
+
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+            } else {
+                console.error("Lenis not loaded.");
+            }
+        });
+
+
+
+        // 2. GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        const cards = document.querySelectorAll('.service-card-section');
+
+        cards.forEach((card, index) => {
+            // Text Reveal Animation when card enters viewport
+            const texts = card.querySelectorAll('.animate-text');
+
+            // Because cards are sticky, we trigger when the card's top hits center of screen or enters
+            gsap.from(texts, {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 60%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            // Glow Blob Mouse Follow
+            const glow = card.querySelector('.mouse-glow');
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Slow lag follow
+                gsap.to(glow, {
+                    x: x - 300, // Center blob (600w/2)
+                    y: y - 300, // Center blob (600h/2)
+                    duration: 1.5,
+                    ease: "power3.out"
+                });
+            });
+        });
+
+        // 3. Mobile Menu Logic
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileToggleContainer = document.getElementById('mobile-toggle-container');
+        const mobileClose = document.getElementById('mobile-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+        const menuTimeline = gsap.timeline({ paused: true });
+
+        if (mobileMenu) {
+            menuTimeline.to(mobileMenu, { x: '0%', duration: 0.8, ease: 'power4.inOut' })
+                .to('.mobile-links > *', { x: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'power3.out' }, "-=0.4")
+                .to('.mobile-footer', { opacity: 1, duration: 0.5 }, "-=0.4");
+
+            gsap.set('.mobile-links > *', { x: 50, opacity: 0 });
+        }
+
+        function openMenu() {
+            if (!isMenuOpen) {
+                menuTimeline.play();
+                document.body.style.overflow = 'hidden';
+                if (mobileToggleContainer) {
+                    mobileToggleContainer.style.opacity = '0';
+                    mobileToggleContainer.style.pointerEvents = 'none';
+                }
+                isMenuOpen = true;
+            }
+        }
+
+        function closeMenu() {
+            if (isMenuOpen) {
+                menuTimeline.reverse();
+                document.body.style.overflow = '';
+                if (mobileToggleContainer) {
+                    mobileToggleContainer.style.opacity = '1';
+                    mobileToggleContainer.style.pointerEvents = 'auto';
+                }
+                isMenuOpen = false;
+            }
+        }
+
+        if (mobileToggle) mobileToggle.addEventListener('click', openMenu);
+        if (mobileClose) mobileClose.addEventListener('click', closeMenu);
+
+        // 4. Kinetic Hero Animation (Scroll-linked, No Pin)
+        const heroTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#expertise-hero",
+                start: "bottom center",
+                end: "bottom top",
+                scrub: 1
+            }
+        });
+
+        // Initial Intro (Runs once on load)
+        gsap.to("#system-text", { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, ease: "power4.out", delay: 0.2 });
+        gsap.to("#logic-text", { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, ease: "power4.out", delay: 0.4 });
+        gsap.to("#hero-line", { height: "48px", duration: 1, ease: "expo.out", delay: 0.8 });
+        gsap.to("#scroll-hint", { opacity: 1, duration: 1, delay: 1 });
+
+        // Scroll Interaction (Outro / Split)
+        // Scroll Interaction (Outro / Split)
+        heroTl
+            .to("#hero-line", { height: 0, opacity: 0, duration: 0.2 }) // Hide initial line
+            .to("#scroll-hint", { opacity: 0, duration: 0.2 }, "<")
+            // DELAY: Hold the text in place for a moment while pinned
+            .to({}, { duration: 0.3 })
+            // BEAM: Shoot data beam down
+            .to("#data-beam", { height: "50vh", duration: 0.5, ease: "power2.in" }, "<")
+            // SPLIT: Now split the text
+            .to("#system-text", {
+                xPercent: -40,
+                yPercent: -20,
+                opacity: 0,
+                filter: "blur(20px)",
+                scale: 1.1,
+                duration: 1
+            }, "split")
+            .to("#logic-text", {
+                xPercent: 40,
+                yPercent: 20,
+                opacity: 0,
+                filter: "blur(20px)",
+                scale: 1.1,
+                duration: 1
+            }, "split");
+
+        // 5. Sentience Node Animation
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: "#sentience-node",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1
+            }
+        })
+            .to(".node-ring", { rotation: 360, duration: 1, stagger: 0.1, transformOrigin: "50% 50%" })
+            .to(".node-core", { rotation: -360, scale: 0.5, duration: 1, transformOrigin: "50% 50%" }, "<")
+            .fromTo(".node-axis", { scale: 0.5, opacity: 0 }, { scale: 1.2, opacity: 1, duration: 1, transformOrigin: "50% 50%" }, "<");
+
+
+
+        document.querySelectorAll('.perspective-container').forEach(container => {
+            const card = container.querySelector('.tilt-card');
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -2; // Max 2 deg tilt
+                const rotateY = ((x - centerX) / centerX) * 2;
+
+                gsap.to(card, {
+                    rotationX: rotateX,
+                    rotationY: rotateY,
+                    duration: 1,
+                    ease: "power2.out",
+                    transformPerspective: 1000
+                });
+            });
+
+            container.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotationX: 0,
+                    rotationY: 0,
+                    duration: 1,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+    </script>
+
+    <script>
+        // Footer 3D Tilt Logic
+        window.addEventListener('load', () => {
+            const footer = document.querySelector('footer');
+            const footerContent = document.querySelector('.footer-content-wrapper');
+
+            if (footer && footerContent) {
+                footer.addEventListener('mousemove', (e) => {
+                    const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+                    const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+                    gsap.to(footerContent, {
+                        rotationY: x * 10,
+                        rotationX: -y * 10,
+                        transformPerspective: 1000,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                });
+
+                footer.addEventListener('mouseleave', () => {
+                    gsap.to(footerContent, {
+                        rotationY: 0,
+                        rotationX: 0,
+                        duration: 1,
+                        ease: "elastic.out(1, 0.3)"
+                    });
+                });
+
+                // Footer Magnetic Button
+                const footerBtn = footer.querySelector('.magnetic-btn');
+                if (footerBtn) {
+                    footer.addEventListener('mousemove', (e) => {
+                        const rect = footer.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+
+                        // Move button slightly more than text for parallax depth
+                        gsap.to(footerBtn, {
+                            x: x * 0.15,
+                            y: y * 0.15,
+                            duration: 0.5,
+                            ease: "power2.out"
+                        });
+                    });
+
+                    footer.addEventListener('mouseleave', () => {
+                        gsap.to(footerBtn, { x: 0, y: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+                    });
+                }
+            }
+        });
+    </script>
+    <!-- 4. Cursor Script (Drop-in) -->
+    <script src="cursor.js"></script>
+    <script src="dot-ring-cursor.js"></script>
+</body>
+
+</html>

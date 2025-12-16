@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <!-- Updated: Cinematic V2 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <title>Selected Work | AETHER</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#050505',
+            charcoal: '#0a0a0a',
+            platinum: '#EAEAEA',
+            glass: 'rgba(255, 255, 255, 0.03)',
+          },
+          backgroundImage: {
+            'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+
+  <style>
+    body {
+      background-color: #050505;
+      color: #EAEAEA;
+      overflow-x: hidden;
+      opacity: 0;
+      animation: pageFadeIn 1s ease-out forwards;
+    }
+
+    @keyframes pageFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #050505;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    /* Hero Text Glitch Animation */
+    .glitch {
+      position: relative;
+      text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
+        -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
+        0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+      animation: glitch 500ms infinite;
+    }
+
+    @keyframes glitch {
+      0% {
+        text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+
+      14% {
+        text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+
+      15% {
+        text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+
+      49% {
+        text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+
+      50% {
+        text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+
+      99% {
+        text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+
+      100% {
+        text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0 rgba(0, 0, 255, 0.75);
+      }
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    .float-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    /* Text Scramble */
+    .scramble {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Outlined Text */
+    .font-outline-2 {
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+      color: transparent;
+    }
+
+    .magnetic-btn-container {
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-obsidian text-platinum antialiased">
+
+  <!-- Noise Overlay -->
+  <div class="fixed inset-0 z-50 pointer-events-none opacity-[0.07] mix-blend-overlay">
+    <div
+      class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')] w-full h-full">
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav
+    class="fixed top-0 left-0 w-full z-[1000] px-6 md:px-12 py-6 md:py-8 flex justify-between items-center mix-blend-difference">
+    <a href="index.html"
+      class="text-xl md:text-2xl font-bold tracking-[0.2em] text-white hover:opacity-80 transition-opacity">AETHER</a>
+    <div class="hidden md:flex gap-12 text-[10px] font-bold uppercase tracking-[0.2em]">
+      <a href="index.html" class="text-gray-300 hover:text-white transition-colors">Home</a>
+      <a href="expertise.html" class="text-gray-300 hover:text-white transition-colors">Expertise</a>
+      <a href="work.html" class="text-white">Work</a>
+      <a href="agency.html" class="text-gray-300 hover:text-white transition-colors">Agency</a>
+    </div>
+    <a href="contact.html"
+      class="hidden md:block px-6 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors text-[10px] font-bold uppercase tracking-widest">Let's
+      Talk</a>
+
+    <!-- Mobile "Glass Pill" Toggle -->
+    <div class="md:hidden transition-opacity duration-300" id="mobile-toggle-container">
+      <button id="mobile-toggle"
+        class="group relative px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-3 overflow-hidden transition-all duration-300 active:scale-95">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-white">Menu</span>
+        <div class="flex flex-col gap-[4px] items-end">
+          <span class="h-[1px] bg-white w-5 group-hover:w-3 transition-all duration-300"></span>
+          <span class="h-[1px] bg-white w-3 group-hover:w-5 transition-all duration-300"></span>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Sidebar Overlay (Glassmorphic) -->
+  <div id="mobile-menu"
+    class="fixed inset-0 z-[1001] bg-obsidian/90 backdrop-blur-xl w-full h-screen transform translate-x-full md:hidden flex flex-col pt-32 px-8 transition-transform duration-700 ease-[cubic-bezier(0.87,0,0.13,1)]">
+    <div class="absolute top-0 left-0 w-full h-full bg-noise opacity-[0.05] pointer-events-none"></div>
+
+    <!-- Close Button -->
+    <button id="mobile-close"
+      class="absolute top-6 right-6 z-[1003] p-4 text-white hover:rotate-90 transition-transform duration-500 ease-out">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="mobile-links flex flex-col items-start gap-8 relative z-10">
+      <span class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Navigation</span>
+
+      <a href="index.html"
+        class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+        <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">01</span>Home
+      </a>
+      <a href="expertise.html"
+        class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+        <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">02</span>Expertise
+      </a>
+      <a href="work.html" class="text-5xl font-light uppercase tracking-tight text-white italic relative z-10">
+        <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">03</span>Work
+      </a>
+      <a href="agency.html"
+        class="text-5xl font-light uppercase tracking-tight text-gray-400 hover:text-white transition-colors relative z-10">
+        <span class="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">04</span>Agency
+      </a>
+    </div>
+
+    <div class="mt-auto mb-12 w-full mobile-footer opacity-0 relative z-10">
+      <div class="w-full h-[1px] bg-white/10 mb-8"></div>
+      <div class="flex justify-between items-center">
+        <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Start a project</span>
+        <a href="contact.html"
+          class="text-sm font-bold uppercase tracking-widest text-black bg-white px-6 py-3 rounded-full">Let's
+          Talk</a>
+      </div>
+      <div class="mt-8 text-[10px] text-gray-700 font-mono tracking-widest uppercase text-center">© AETHER AGENCY
+        2025
+      </div>
+    </div>
+  </div>
+
+  <main class="relative z-10">
+
+    <!-- HERO SECTION - Centered with Advanced Animations -->
+    <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <!-- Animated Background Grid -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0"
+          style="background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 50px 50px;">
+        </div>
+      </div>
+
+      <!-- Aurora Orbs -->
+      <div
+        class="absolute top-[-30%] left-[-20%] w-[80vw] h-[80vw] rounded-full bg-cyan-500/10 blur-[150px] float-animation">
+      </div>
+      <div
+        class="absolute bottom-[-30%] right-[-20%] w-[80vw] h-[80vw] rounded-full bg-violet-500/10 blur-[150px] float-animation"
+        style="animation-delay: 3s;"></div>
+
+      <div class="max-w-7xl mx-auto px-6 md:px-12 text-center relative z-10 pt-32">
+        <!-- Main Hero Title -->
+        <div class="mb-12 overflow-hidden">
+          <h1 class="text-7xl md:text-[12rem] font-black uppercase tracking-tighter leading-[0.85] hero-title">
+            <div class="inline-block">
+              <span class="scramble glitch">SELECTED</span>
+            </div>
+            <br>
+            <div
+              class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-pink-400">
+              <span class="scramble">WORK</span>
+            </div>
+          </h1>
+        </div>
+
+        <!-- Subtitle with Typewriter Effect -->
+        <p class="text-sm md:text-xl font-mono text-gray-400 mb-16 tracking-widest subtitle">
+          CRAFTING DIGITAL EXPERIENCES THAT LEAVE A MARK
+        </p>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-prompt flex flex-col items-center gap-4 mt-20">
+          <span class="text-xs font-mono text-gray-500 uppercase tracking-widest animate-pulse">Scroll to Explore</span>
+          <div class="w-[2px] h-16 bg-gradient-to-b from-white via-gray-500 to-transparent overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-8 bg-white animate-scroll"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CINEMATIC VERTICAL STACKING SHOWCASE -->
+    <section id="showcase-container" class="relative bg-obsidian text-white pb-32">
+
+      <!-- Kinetic Background Typography -->
+      <div class="fixed inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none z-0">
+        <h2
+          class="text-[20vw] font-black uppercase whitespace-nowrap leading-none tracking-tighter mix-blend-difference"
+          id="bg-text">
+          FEATURED
+        </h2>
+      </div>
+
+      <div class="projects-column max-w-7xl mx-auto px-6 md:px-0 relative z-10 w-full flex flex-col items-center">
+
+        <!-- Project 1: BridgeHead -->
+        <div
+          class="project-card sticky top-[10vh] w-full min-h-[85vh] bg-[#0a0a0a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl mb-24 origin-top">
+          <div class="flex flex-col md:flex-row h-full">
+            <!-- Content -->
+            <div
+              class="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 relative bg-[#0f0f0f]">
+              <div>
+                <span class="text-6xl font-bold font-outline-2 text-white/10">01</span>
+                <h3 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mt-4 mb-8 leading-[0.9]">
+                  Bridge<br><span class="text-gray-600">Head</span>
+                </h3>
+                <p class="text-gray-400 font-mono text-sm md:text-md max-w-sm leading-relaxed">
+                  Revolutionizing B2B connections with a robust React & TypeScript architecture. A full-stack platform
+                  built for scalability and performance.
+                </p>
+              </div>
+              <div class="flex gap-3 flex-wrap mt-8">
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">React</span>
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">MongoDB</span>
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">TypeScript</span>
+              </div>
+            </div>
+
+            <!-- Image -->
+            <div class="w-full md:w-7/12 relative overflow-hidden group">
+              <a href="https://github.com/shanks5017/Bridgehead.git" target="_blank"
+                class="block w-full h-full cursor-none">
+                <img src="public/img1.png"
+                  class="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                  alt="BridgeHead">
+                <!-- Magnetic Button -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none magnetic-parent">
+                  <div
+                    class="w-24 h-24 bg-white rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-500 magnetic-btn shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    <span class="text-black font-black uppercase text-xs tracking-widest">View</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2: Foundry Blog -->
+        <div
+          class="project-card sticky top-[10vh] w-full min-h-[85vh] bg-[#0a0a0a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl mb-24 origin-top">
+          <div class="flex flex-col md:flex-row h-full">
+            <div
+              class="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 relative bg-[#0f0f0f]">
+              <div>
+                <span class="text-6xl font-bold font-outline-2 text-white/10">02</span>
+                <h3 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mt-4 mb-8 leading-[0.9]">
+                  Foundry<br><span class="text-gray-600">Blog</span>
+                </h3>
+                <p class="text-gray-400 font-mono text-sm md:text-md max-w-sm leading-relaxed">
+                  Immersive reading experience crafted with Next.js. A minimalist aesthetic meeting maximum performance
+                  and readability.
+                </p>
+              </div>
+              <div class="flex gap-3 flex-wrap mt-8">
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">Next.js</span>
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">Tailwind</span>
+              </div>
+            </div>
+            <div class="w-full md:w-7/12 relative overflow-hidden group">
+              <a href="https://foundryblog.vercel.app/" target="_blank" class="block w-full h-full cursor-none">
+                <img src="public/img2.png"
+                  class="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                  alt="Foundry Blog">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none magnetic-parent">
+                  <div
+                    class="w-24 h-24 bg-white rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-500 magnetic-btn shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    <span class="text-black font-black uppercase text-xs tracking-widest">Read</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3: AeroDynamics -->
+        <div
+          class="project-card sticky top-[10vh] w-full min-h-[85vh] bg-[#0a0a0a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl mb-24 origin-top">
+          <div class="flex flex-col md:flex-row h-full">
+            <div
+              class="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 relative bg-[#0f0f0f]">
+              <div>
+                <span class="text-6xl font-bold font-outline-2 text-white/10">03</span>
+                <h3 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mt-4 mb-8 leading-[0.9]">
+                  Aero<br><span class="text-gray-600">Calc</span>
+                </h3>
+                <p class="text-gray-400 font-mono text-sm md:text-md max-w-sm leading-relaxed">
+                  Real-time physics computations visualized in the browser. Where heavy mathematics meets elegant,
+                  interactive design.
+                </p>
+              </div>
+              <div class="flex gap-3 flex-wrap mt-8">
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">Physics</span>
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">WebGL</span>
+              </div>
+            </div>
+            <div class="w-full md:w-7/12 relative overflow-hidden group">
+              <a href="https://aerodynamics-calcy.vercel.app/" target="_blank" class="block w-full h-full cursor-none">
+                <img src="public/img3.png"
+                  class="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                  alt="Aero Calc">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none magnetic-parent">
+                  <div
+                    class="w-24 h-24 bg-white rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-500 magnetic-btn shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    <span class="text-black font-black uppercase text-xs tracking-widest">Run</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 4: GitHub -->
+        <div
+          class="project-card sticky top-[10vh] w-full min-h-[85vh] bg-[#0a0a0a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl mb-24 origin-top">
+          <div class="flex flex-col md:flex-row h-full">
+            <div
+              class="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 relative bg-[#0f0f0f]">
+              <div>
+                <span class="text-6xl font-bold font-outline-2 text-white/10">04</span>
+                <h3 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mt-4 mb-8 leading-[0.9]">
+                  Open<br><span class="text-gray-600">Source</span>
+                </h3>
+                <p class="text-gray-400 font-mono text-sm md:text-md max-w-sm leading-relaxed">
+                  Contributing to the global ecosystem. Building tools, fixing bugs, and driving technical innovation
+                  forward.
+                </p>
+              </div>
+              <div class="flex gap-3 flex-wrap mt-8">
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">Community</span>
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">DevTools</span>
+              </div>
+            </div>
+            <div class="w-full md:w-7/12 relative overflow-hidden group">
+              <a href="https://github.com/shanks5017" target="_blank" class="block w-full h-full cursor-none">
+                <img src="public/img4.png"
+                  class="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                  alt="GitHub">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none magnetic-parent">
+                  <div
+                    class="w-24 h-24 bg-white rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-500 magnetic-btn shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    <span class="text-black font-black uppercase text-xs tracking-widest">Code</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 5: Support -->
+        <div
+          class="project-card sticky top-[10vh] w-full min-h-[85vh] bg-[#0a0a0a] border border-white/5 rounded-3xl overflow-hidden shadow-2xl mb-24 origin-top">
+          <div class="flex flex-col md:flex-row h-full">
+            <div
+              class="w-full md:w-5/12 p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 relative bg-[#0f0f0f]">
+              <div>
+                <span class="text-6xl font-bold font-outline-2 text-white/10">05</span>
+                <h3 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mt-4 mb-8 leading-[0.9]">
+                  Shanks<br><span class="text-gray-600">Works</span>
+                </h3>
+                <p class="text-gray-400 font-mono text-sm md:text-md max-w-sm leading-relaxed">
+                  The comprehensive showcase of development. You are experiencing it right now.
+                </p>
+              </div>
+              <div class="flex gap-3 flex-wrap mt-8">
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">Design</span>
+                <span
+                  class="px-4 py-2 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 bg-white/5">Web</span>
+              </div>
+            </div>
+            <div class="w-full md:w-7/12 relative overflow-hidden group">
+              <a href="https://shanksportfolio.vercel.app/" target="_blank" class="block w-full h-full cursor-none">
+                <img src="public/img5.png"
+                  class="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                  alt="Portfolio">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none magnetic-parent">
+                  <div
+                    class="w-24 h-24 bg-white rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-500 magnetic-btn shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    <span class="text-black font-black uppercase text-xs tracking-widest">Visit</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+      class="relative min-h-screen bg-obsidian z-50 flex flex-col justify-between overflow-hidden footer-3d-stage perspective-[1000px]">
+
+      <!-- Background Elements -->
+      <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,0,255,0.05),transparent_60%)]">
+        </div>
+      </div>
+
+      <div
+        class="flex-1 flex flex-col items-center justify-center relative z-10 footer-content-wrapper transform-style-3d">
+        <div class="group relative cursor-pointer text-center">
+          <h2
+            class="text-[15vw] font-black tracking-tighter leading-[0.85] text-transparent stroke-text transition-all duration-700 group-hover:text-white/10 mix-blend-overlay select-none">
+            READY
+          </h2>
+          <h2
+            class="text-[15vw] font-black tracking-tighter leading-[0.85] text-white select-none relative z-10 text-glow">
+            TO BUILD?
+          </h2>
+
+          <!-- Floating Action Button -->
+          <a href="contact.html"
+            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 bg-white rounded-full flex items-center justify-center magnetic-btn hover:scale-110 transition-transform duration-500 z-20 mix-blend-difference">
+            <span class="text-black font-black uppercase tracking-widest text-sm md:text-base animate-pulse">Let's
+              Talk</span>
+          </a>
+        </div>
+      </div>
+
+      <div
+        class="flex flex-col md:flex-row justify-between items-center md:items-end px-6 md:px-12 py-12 border-t border-white/10 relative z-20 bg-obsidian gap-8 md:gap-0">
+        <div class="text-center md:text-left">
+          <h3 class="text-2xl font-bold tracking-widest text-white mb-2">AETHER</h3>
+          <p class="text-xs text-gray-500 font-mono">BESPOKE DIGITAL ARCHITECTS</p>
+        </div>
+        <div class="text-center md:text-right">
+          <div
+            class="flex gap-6 justify-center md:justify-end mb-4 text-xs font-mono text-gray-500 uppercase tracking-widest">
+            <a href="https://www.linkedin.com/in/shashank-tareehal" target="_blank"
+              class="hover:text-white transition-colors">LinkedIn</a>
+            <a href="https://x.com/Shashank_5017" target="_blank" class="hover:text-white transition-colors">Twitter /
+              X</a>
+            <a href="https://www.instagram.com/shashank_5017/" target="_blank"
+              class="hover:text-white transition-colors">Instagram</a>
+          </div>
+          <p class="text-[10px] text-gray-600 font-mono mb-1">SYSTEM_STATUS: [OFFLINE]</p>
+          <p class="text-[10px] text-gray-700 font-mono">&copy; 2025 AETHER AGENCY.</p>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <style>
+    @keyframes scroll {
+      0% {
+        transform: translateY(-100%);
+      }
+
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+
+    .animate-scroll {
+      animation: scroll 2s ease-in-out infinite;
+    }
+
+    .stroke-text {
+      -webkit-text-stroke: 2px rgba(255, 255, 255, 0.3);
+    }
+
+    .text-glow {
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-3d-stage {
+      perspective: 1000px;
+    }
+
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+  </style>
+
+  <script>
+    // Register GSAP Plugins
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ==================================================================
+    // 0. MOBILE MENU LOGIC
+    // ==================================================================
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mobileToggleContainer = document.getElementById('mobile-toggle-container'); // Container for fade
+    const mobileClose = document.getElementById('mobile-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+    let isMenuOpen = false;
+    const menuTimeline = gsap.timeline({ paused: true });
+
+    // Setup Menu Animation
+    if (mobileMenu) {
+      menuTimeline.to(mobileMenu, { x: '0%', duration: 0.8, ease: 'power4.inOut' })
+        .to('.mobile-links > *', { x: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'power3.out' }, "-=0.4")
+        .to('.mobile-footer', { opacity: 1, duration: 0.5 }, "-=0.4");
+
+      gsap.set('.mobile-links > *', { x: 50, opacity: 0 });
+    }
+
+    function openMenu() {
+      if (!isMenuOpen) {
+        menuTimeline.play();
+        document.body.style.overflow = 'hidden';
+        if (mobileToggleContainer) {
+          mobileToggleContainer.style.opacity = '0';
+          mobileToggleContainer.style.pointerEvents = 'none';
+        }
+        isMenuOpen = true;
+      }
+    }
+
+    function closeMenu() {
+      if (isMenuOpen) {
+        menuTimeline.reverse();
+        document.body.style.overflow = '';
+        if (mobileToggleContainer) {
+          mobileToggleContainer.style.opacity = '1';
+          mobileToggleContainer.style.pointerEvents = 'auto';
+        }
+        isMenuOpen = false;
+      }
+    }
+
+    if (mobileToggle) {
+      mobileToggle.addEventListener('click', openMenu);
+    }
+
+    if (mobileClose) {
+      mobileClose.addEventListener('click', closeMenu);
+    }
+
+    // Hero Animations
+    gsap.from('.hero-title', { opacity: 0, y: 100, duration: 1.5, ease: 'power4.out', delay: 0.5 });
+    gsap.from('.subtitle', { opacity: 0, y: 50, duration: 1, delay: 1 });
+
+    window.addEventListener('load', () => {
+      ScrollTrigger.refresh();
+
+      // Card Stacking Animation
+      const cards = gsap.utils.toArray(".project-card");
+
+      cards.forEach((card, i) => {
+        if (i !== cards.length - 1) {
+          gsap.to(card, {
+            scale: 0.9,
+            opacity: 0.5,
+            scrollTrigger: {
+              trigger: cards[i + 1],
+              start: "top bottom",
+              end: "top top",
+              scrub: true,
+            }
+          });
+        }
+      });
+
+      // Magnetic Button Logic (Projects)
+      const projectLinks = document.querySelectorAll('.project-card a');
+      projectLinks.forEach(link => {
+        const btn = link.querySelector('.magnetic-btn');
+
+        if (btn) {
+          link.addEventListener('mousemove', (e) => {
+            const rect = link.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            gsap.to(btn, {
+              x: x * 0.5,
+              y: y * 0.5,
+              duration: 0.4,
+              ease: "power2.out"
+            });
+          });
+
+          link.addEventListener('mouseleave', () => {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
+          });
+        }
+      });
+
+      // Footer 3D Tilt Logic
+      const footer = document.querySelector('footer');
+      const footerContent = document.querySelector('.footer-content-wrapper');
+
+      if (footer && footerContent) {
+        footer.addEventListener('mousemove', (e) => {
+          const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+          const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+          gsap.to(footerContent, {
+            rotationY: x * 10, // Tilt left/right
+            rotationX: -y * 10, // Tilt up/down
+            transformPerspective: 1000,
+            duration: 0.5,
+            ease: "power2.out"
+          });
+        });
+
+        footer.addEventListener('mouseleave', () => {
+          gsap.to(footerContent, {
+            rotationY: 0,
+            rotationX: 0,
+            duration: 1,
+            ease: "elastic.out(1, 0.3)"
+          });
+        });
+
+        // Footer Magnetic Button
+        const footerBtn = footer.querySelector('.magnetic-btn');
+        if (footerBtn) {
+          footer.addEventListener('mousemove', (e) => {
+            const rect = footer.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            // Move button slightly more than text for parallax depth
+            gsap.to(footerBtn, {
+              x: x * 0.15,
+              y: y * 0.15,
+              duration: 0.5,
+              ease: "power2.out"
+            });
+          });
+
+          footer.addEventListener('mouseleave', () => {
+            gsap.to(footerBtn, { x: 0, y: 0, duration: 1, ease: "elastic.out(1, 0.3)" });
+          });
+        }
+      }
+    });
+  </script>
+
+  <script src="cursor.js"></script>
+  <script src="dot-ring-cursor.js"></script>
+</body>
+
+</html>
