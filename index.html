@@ -64,8 +64,13 @@
       background-color: #050505;
       color: #EAEAEA;
       overflow-x: hidden;
-      cursor: none;
-      /* FORCE HIDE DEFAULT CURSOR */
+    }
+
+    /* Only hide cursor on devices with a mouse (not touch) */
+    @media (pointer: fine) {
+      body {
+        cursor: none;
+      }
     }
 
     ::-webkit-scrollbar {
@@ -157,7 +162,7 @@
   </div>
 
   <!-- Noise Overlay -->
-  <div class="fixed inset-0 z-50 pointer-events-none opacity-[0.07] mix-blend-overlay">
+  <div class="fixed inset-0 z-[1] pointer-events-none opacity-[0.07] mix-blend-overlay">
     <div class="absolute inset-0 bg-noise w-full h-full animate-pulse"></div>
   </div>
 

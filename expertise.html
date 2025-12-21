@@ -47,8 +47,13 @@
             overflow-x: hidden;
             opacity: 0;
             animation: pageFadeIn 1s ease-out forwards;
-            cursor: none;
-            /* FORCE HIDE DEFAULT CURSOR */
+        }
+
+        /* Only hide cursor on devices with a mouse (not touch) */
+        @media (pointer: fine) {
+            body {
+                cursor: none;
+            }
         }
 
         @keyframes pageFadeIn {
@@ -104,7 +109,7 @@
 <body class="bg-obsidian text-platinum antialiased selection:bg-white/20">
 
     <!-- Noise Overlay -->
-    <div class="fixed inset-0 z-[60] pointer-events-none opacity-[0.07] mix-blend-overlay">
+    <div class="fixed inset-0 z-[1] pointer-events-none opacity-[0.07] mix-blend-overlay">
         <div class="absolute inset-0 bg-noise w-full h-full animate-pulse"></div>
     </div>
 
