@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Lenis Recommended CSS --- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background-color: #050505;
+  color: #EAEAEA;
+  overflow-x: hidden;
+}
+
+/* Only hide cursor on devices with a mouse (not touch) */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.bg-grid-vertical {
+  background-size: 20% 100%;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Spotlight Effect */
+.spotlight-overlay {
+  background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.06),
+      transparent 40%);
+  z-index: 2;
+}
+
+/* Cursor Blink */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Footer 3D Styles */
+.stroke-text {
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.3);
+}
+
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  display: none;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+@media (pointer: fine) {
+  .cursor-dot,
+  .cursor-ring {
+    display: block;
+  }
+}
+
+.aether-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999999;
+  mix-blend-mode: difference;
+  will-change: transform, width, height, border-radius;
+  display: none;
+}
+
+.cursor-shape {
+  width: 100%;
+  height: 100%;
+  background: white;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (pointer: fine) {
+  .aether-cursor {
+    display: block;
+  }
+}
+
+.text-glow {
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.footer-3d-stage {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+/* Floating Label Styles */
+.floating-input:focus~label,
+.floating-input:not(:placeholder-shown)~label {
+  top: -0.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Tag Buttons */
+.tag-btn.active {
+  background-color: white;
+  color: black;
+  border-color: white;
+}

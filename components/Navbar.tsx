@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import MagneticButton from './MagneticButton';
 
@@ -7,31 +8,20 @@ interface NavbarProps {
   setView: (view: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentView }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const linksRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'expertise', label: 'Expertise' },
-    { id: 'work', label: 'Work' },
-    { id: 'agency', label: 'Agency' }
+    { id: 'home', path: '/', label: 'Home' },
+    { id: 'expertise', path: '/expertise', label: 'Expertise' },
+    { id: 'work', path: '/work', label: 'Work' },
+    { id: 'agency', path: '/agency', label: 'Agency' }
   ];
 
-  const handleNavClick = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    
-    // Update Hash (Triggers App.tsx listener)
-    if (id === 'home') {
-       window.history.pushState(null, '', ' '); // Clear hash for home
-       // Manually set view if hash doesn't trigger
-       setView('home');
-    } else {
-       window.location.hash = id;
-    }
-
+  const handleNavClick = () => {
     if (isMobileMenuOpen) {
       toggleMobileMenu();
     }
@@ -81,22 +71,22 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
       >
         {/* Logo */}
         <div className="flex-1 relative z-[1002]">
-           <a 
-             href="#"
-             onClick={(e) => handleNavClick(e, 'home')}
+           <Link 
+             to="/"
+             onClick={handleNavClick}
              className="text-xl md:text-2xl font-bold tracking-[0.2em] text-white cursor-pointer hover:opacity-80 transition-opacity"
            >
              AETHER
-           </a>
+           </Link>
         </div>
 
         {/* Desktop Links (Hidden on Mobile) */}
         <div className="hidden md:flex gap-12 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300 relative z-[1001]">
              {navItems.map((item) => (
-               <a 
+               <Link 
                  key={item.id}
-                 href={`#${item.id}`}
-                 onClick={(e) => handleNavClick(e, item.id)}
+                 to={item.path}
+                 onClick={handleNavClick}
                  className={`relative group py-2 block cursor-pointer ${isActive(item.id) ? 'text-white' : ''}`}
                >
                  <div className="relative overflow-hidden">
@@ -112,7 +102,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
                      ${isActive(item.id) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 origin-right group-hover:origin-left'}
                    `}
                  ></span>
-               </a>
+               </Link>
              ))}
         </div>
 
@@ -135,11 +125,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <a href="contact.html" className="inline-block">
+            <Link to="/contact" className="inline-block">
                 <MagneticButton className="px-6 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors cursor-pointer">
                    <span className="text-[10px] font-bold uppercase tracking-widest">Let's Talk</span>
                 </MagneticButton>
-            </a>
+            </Link>
           </div>
         </div>
       </nav>
@@ -162,21 +152,21 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
             </svg>
         </button>
         
-        <div ref={linksRef} className="flex flex-col items-start gap-8 relative z-10 relative z-10">
+        <div ref={linksRef} className="flex flex-col items-start gap-8 relative z-10">
           <span className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Navigation</span>
           
           {navItems.map((item, index) => (
-             <a 
+             <Link 
                key={item.id}
-               href={`#${item.id}`}
-               onClick={(e) => handleNavClick(e, item.id)}
+               to={item.path}
+               onClick={handleNavClick}
                className={`text-5xl font-light uppercase tracking-tight hover:text-white transition-colors relative z-10
                  ${isActive(item.id) ? 'text-white italic' : 'text-gray-400'}
                `}
              >
                <span className="text-sm font-mono mr-6 align-top opacity-30 inline-block -translate-y-2">0{index + 1}</span>
                {item.label}
-             </a>
+             </Link>
            ))}
         </div>
 
@@ -184,12 +174,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
             <div className="w-full h-[1px] bg-white/10 mb-8"></div>
             <div className="flex justify-between items-center">
                 <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">Start a project</span>
-                <a 
-                    href="contact.html"
+                <Link 
+                    to="/contact"
+                    onClick={handleNavClick}
                     className="text-sm font-bold uppercase tracking-widest text-black bg-white px-6 py-3 rounded-full hover:bg-gray-200 transition-colors"
                 >
                     Let's Talk
-                </a>
+                </Link>
             </div>
             <div className="mt-8 text-[10px] text-gray-700 font-mono tracking-widest uppercase text-center">
                 © Aether Agency 2025

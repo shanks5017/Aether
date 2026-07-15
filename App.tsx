@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,25 +10,35 @@ import Home from './components/Home';
 import Expertise from './components/Expertise';
 import Work from './components/Work';
 import Agency from './components/Agency';
+import Contact from './components/Contact';
+import CustomCursor from './components/CustomCursor';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-const App: React.FC = () => {
-  const [view, setView] = useState('home');
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
+const AppContent: React.FC = () => {
+  const { pathname } = useLocation();
+  const currentView = pathname.replace('/', '') || 'home';
 
   useEffect(() => {
-    // Initialize Lenis for smooth scrolling - Heavy Landing Config
+    // Initialize Lenis for smooth scrolling
     const lenis = new Lenis({
       duration: 1.5,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential ease out
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
       touchMultiplier: 2,
     });
 
-    // Sync Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
     gsap.ticker.add((time) => {
@@ -59,49 +70,36 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Hash Navigation Handler
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      const validViews = ['home', 'expertise', 'work', 'agency'];
-      
-      if (validViews.includes(hash)) {
-        setView(hash);
-      } else if (hash === '' || hash === 'top') {
-        setView('home');
-      }
-    };
-
-    // Check on initial load
-    handleHashChange();
-
-    // Listen for hash changes (Back button, manual URL change)
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
-  // Force scroll to top on view change
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [view]);
-
   return (
     <div className="bg-obsidian text-platinum min-h-screen w-full relative overflow-x-hidden">
+      <CustomCursor />
+      <ScrollToTop />
       {/* Background Layers */}
       <NoiseOverlay />
       <div className="fixed inset-0 z-0 bg-grid-vertical pointer-events-none opacity-20"></div>
       
       {/* Navigation */}
-      <Navbar currentView={view} setView={setView} />
+      <Navbar currentView={currentView} setView={() => {}} />
 
       {/* Main Content Router */}
       <main className="relative z-10 flex flex-col w-full min-h-screen">
-        {view === 'home' && <Home />}
-        {view === 'expertise' && <Expertise />}
-        {view === 'work' && <Work />}
-        {view === 'agency' && <Agency />}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/expertise" element={<Expertise />} />
+          <Route path="/work" element={<Work />} />
+          <Route path="/agency" element={<Agency />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
       </main>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 };
 
